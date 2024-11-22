@@ -16,17 +16,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { username, password } = req.body;
 
-  // Проверяем, существует ли пользователь
+
   const existingUser = users.find((u) => u.username === username);
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
   }
 
-  // Генерируем соль и хэшируем пароль
   const salt = crypto.randomBytes(16).toString("hex");
   const hashedPassword = hashPassword(password, salt);
 
-  // Сохраняем нового пользователя
+  
   users.push({
     id: users.length + 1,
     username,
