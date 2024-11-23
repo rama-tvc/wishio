@@ -118,7 +118,7 @@ export default function LoginPage() {
 
         <p className="mt-10 text-center text-sm/6 text-gray-500">
           Not a member?{' '}
-          <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <a href="/sign-up" className="font-semibold text-indigo-600 hover:text-indigo-500">
            SignUp
           </a>
         </p>
