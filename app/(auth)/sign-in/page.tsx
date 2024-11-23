@@ -1,53 +1,53 @@
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
+  // const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    router.push("/lists");
+    // const formData = new FormData(e.target as HTMLFormElement);
+    // const email = formData.get("email") as string;
+    // const password = formData.get("password") as string;
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    // if (!email || !password) {
+    //   setError("Email and password are required");
+    //   return;
+    // }
 
-    if (!email || !password) {
-      setError("Email and password are required");
-      return;
-    }
+    // try {
+    //   setLoading(true);
+    //   setError(null);
 
-    try {
-      setLoading(true);
-      setError(null);
+    //   const response = await fetch("/api/login", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ email, password }),
+    //   });
 
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    //   const data = await response.json();
 
-      const data = await response.json();
+    //   if (!response.ok) {
+    //     setError(data.message || "Login failed");
+    //     return;
+    //   }
 
-      if (!response.ok) {
-        setError(data.message || "Login failed");
-        return;
-      }
-
-      localStorage.setItem("token", data.token);
+    //   localStorage.setItem("token", data.token);
 
       
-      router.push("/");
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    //   router.push("/lists");
+    // } catch (err) {
+    //   console.error(err);
+    //   setError("Something went wrong. Please try again.");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -64,7 +64,7 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+       <p className="text-red-500 text-center mb-4"></p>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
@@ -108,10 +108,10 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+             
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-400"
             >
-              {loading ? "Signing in..." : "Sign in"}
+             SignIn
             </button>
           </div>
         </form>
