@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 
 "use client";
 
@@ -55,8 +56,8 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
-          src="https://i.pinimg.com/736x/9d/e1/c0/9de1c0582d0d3e20eb978f8097e3a953.jpg"
-          className="mx-auto h-20px w-20px rounded-lg" 
+          src="/logo.png"
+           className="mx-auto w-16 sm:w-24 md:w-32 lg:w-40 h-auto"
         />
         <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
           Sign in to your account
