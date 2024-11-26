@@ -1,0 +1,20 @@
+.formList {
+  z-index: 1000;
+}
+.buttonExpandList {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.formListButton {
+  background-color: grey;
+
+  color: black;
+  width: 100%;
+  margin: 10px;
+}
+#formList {
+  background-color: auto;
+  display: inline-flex;
+}
