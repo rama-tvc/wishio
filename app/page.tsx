@@ -1,17 +1,19 @@
 "use client"
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import WishListPage from "./(dashboard)/wishes/page";
+import Link from 'next/link';
+import WishListPage from './(dashboard)/wishes/page';
+
+
 
 
 export default function Home() {
  
     return (
       <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<WishListPage />} />
-          </Routes>
-        </BrowserRouter>
+        <WishListPage/>
+        <div>
+        <Link href = "/lists/123/">Переход к спискам 123</Link>
+        </div>
+    <Link href = "/lists">Переход к общим спискам</Link>
       </div>
     );
   }

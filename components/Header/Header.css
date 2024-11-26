@@ -1,0 +1,24 @@
+.header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    padding-left: 200px;
+}
+
+.header__left-part {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header__logo img {
+    height: auto;
+    width: 100px;
+}
+
+.header__profile img {
+    width: 64px;
+    border-radius: 100%;
+}
