@@ -1,10 +1,13 @@
 
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
+import Dashboard from "../components/Dashboard";
 
 
 
 export default function Home() {
   return (
-      redirect("/sign-in")
+      
+      // redirect("/sign-in")
+      <Dashboard/>
   );
 }
