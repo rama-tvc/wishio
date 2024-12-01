@@ -1,138 +1,129 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
+  const { data: session } = useSession();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const isFormValid = email && password && password === confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isFormValid) {
-      setError("Please fill in all fields correctly.");
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
-      router.push("/sign-in");
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    router.push(" ");
   };
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
-          Create your account
-        </h2>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center px-6 py-12">
+      <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-8 space-y-6">
+        <div className="text-center">
+          <img
+            alt="Your Company"
+            src="/logo.png"
+            className="mx-auto w-16 sm:w-20"
+          />
+          <h2 className="text-2xl font-extrabold text-gray-800 mt-4">
+            {session ? `Welcome, ${session.user?.name}` : "Create Your Account"}
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            Sign up to access all the features.
+          </p>
+        </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-              />
+        {!session ? (
+          <>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  autoComplete="name"
+                  className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  autoComplete="new-password"
+                  className="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center bg-indigo-600 text-white text-sm font-semibold py-2 px-4 rounded-md shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Sign Up
+                </button>
+              </div>
+            </form>
+
+            <div className="flex items-center justify-center space-x-4 mt-6">
+              <button
+                onClick={() => signIn("google")}
+                className="flex items-center space-x-2 bg-red-500 text-white py-2 px-4 rounded-md shadow hover:bg-red-400"
+              >
+                <span>Sign up with Google</span>
+              </button>
+              <button
+                onClick={() => signIn("github")}
+                className="flex items-center space-x-2 bg-gray-800 text-white py-2 px-4 rounded-md shadow hover:bg-gray-700"
+              >
+                <span>Sign up with GitHub</span>
+              </button>
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
-              Password
-            </label>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-900">
-              Confirm Password
-            </label>
-            <div className="mt-2">
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
-              />
-            </div>
-          </div>
-
-          <div>
+          </>
+        ) : (
+          <div className="text-center space-y-4">
+            <p className="text-gray-700">
+              You are already signed in as {session.user?.email}.
+            </p>
             <button
-              type="submit"
-              disabled={!isFormValid || loading}
-              className={`flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold text-white shadow-sm ${
-                isFormValid
-                  ? "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
+              onClick={() => router.push("/dashboard")}
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-500"
             >
-              {loading ? "Signing up..." : "Sign up"}
+              Go to Dashboard
             </button>
           </div>
-        </form>
+        )}
 
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Already have an account?{" "}
-          <a href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
-            Sign in
-          </a>
-        </p>
+        {!session && (
+          <p className="text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <a href="/sign-in" className="font-semibold text-indigo-600 hover:underline">
+              Sign In
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );
