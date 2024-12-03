@@ -1,0 +1,92 @@
+.idInfo {
+  display: flex;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовки */
+.idInfo h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Стили формы */
+.formInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Поля ввода */
+.formInfo label {
+  font-weight: bold;
+  font-size: 14px;
+  color: #555;
+}
+
+.formInfo input[type="text"],
+.formInfo input[type="date"],
+.formInfo select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.formInfo input:focus,
+.formInfo select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Кнопка */
+.theme-change {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.theme-change:hover {
+  background-color: #0056b3;
+}
+
+.theme-change:active {
+  background-color: #003d80;
+}
+
+/* Стили для placeholder */
+input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Адаптивный дизайн */
+@media (max-width: 768px) {
+  .idInfo {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .formInfo {
+    gap: 10px;
+  }
+
+  .theme-change {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}

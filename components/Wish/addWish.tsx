@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useIsModalOpen } from "./buttonLink";
-import "./closeButton.css"
+import { useIsModalOpen } from "../Buttons/buttonLink";
+import "@/components/Buttons/closeButton.css"
+import '@/components/WishLists/addWishList.css'
+import "@/components/form.css"
 
 
 function AddWish() {
@@ -40,7 +42,7 @@ function AddWish() {
   const {isModalOpenWish, closeModalWish} = useIsModalOpen();
 
   return (
-    <div>
+    <div className="formList">
       {isModalOpenWish && (
         <div className="modal">
         <div className="cl-btn-2">
@@ -50,9 +52,9 @@ function AddWish() {
         <span className="close-btn" onClick={closeModalWish}>Закрыть</span>
     </div>
     </div>
-    <form onSubmit={HandleSubmit}>
+    <form onSubmit={HandleSubmit} className="formSubmit">
       <div>
-        <div>Введите ваш желаемый подарок:</div>
+        <div className="labelForm">Введите ваш желаемый подарок:</div>
         <label htmlFor="name">Имя:</label>
         <input
           type="text"

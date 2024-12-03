@@ -1,0 +1,74 @@
+.formSubmit {
+  display: inline-flex;
+  max-width: 30%;
+  margin: 0px;
+  padding: 3px 0 10px 0;
+  background-color: floralwhite;
+  border-right: 1px solid #e0e4e8;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Стили для label */
+.formSubmit label {
+  font-size: 20px;
+  color: black;
+}
+/* div {
+    color: #4a4a4a;
+  } */
+
+/* Базовый стиль input */
+.formSubmit input,
+select {
+  color: white;
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 20px;
+  background-color: #939393;
+}
+
+/* Стили при фокусе */
+.formSubmit input:focus,
+select:focus {
+  border-color: green;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+/* Стили для кнопки */
+button {
+  background-color: #7898fb;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Эффекты кнопки */
+.formSubmit button:hover {
+  /* background-color: #4f4b4b; */
+  transform: scale(1.02);
+  background-color: #003cff;
+}
+
+/* .dark {
+    background-color: black;
+    color: white;
+  }
+  
+  .light {
+    background-color: white;
+    color: black;
+  } */
+.checkbox {
+  accent-color: #3366ff; /* Акцентный синий цвет */
+}

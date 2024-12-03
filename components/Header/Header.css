@@ -1,0 +1,33 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  justify-content: flex-start;
+}
+
+header ul a {
+  text-decoration: none;
+}
+
+header ul a.active {
+  color: #007bff;
+}
+.toggleTheme {
+  cursor: pointer;
+}
+.toggleTheme:hover {
+  background-color: #4a4a4a;
+  color: white;
+}
+.dashboard-layout-is-dark .toggleTheme:hover {
+  background-color: white;
+  color: #4a4a4a;
+}

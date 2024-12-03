@@ -1,8 +1,11 @@
 "use client";
 import "./addWishList.css"
-import "./closeButton.css"
-import "./modal.css"
-import { useIsModalOpen } from "./buttonLink";
+import "@/components/Buttons/closeButton.css"
+
+
+import "@/components/modal.css"
+import "@/components/form.css"
+import { useIsModalOpen } from "../Buttons/buttonLink";
 
 import { useState } from "react";
 
@@ -55,7 +58,7 @@ function AddWishList() {
         <span className="close-btn" onClick={closeModalList}>Закрыть</span>
     </div>
 </div>
-    <form onSubmit={HandleSubmit}>
+    <form onSubmit={HandleSubmit} className="formSubmit">
       <div>
         <div className="labelForm">Создайте свой список подарков для определенных людей:</div>
         <label htmlFor="name">Название списка:</label>

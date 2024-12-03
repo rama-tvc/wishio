@@ -1,7 +1,8 @@
 "use client"
 import React, { useState } from "react"
-import './addWishList.css'
+import '@/components/WishLists/addWishList.css'
 import { useIsModalOpen } from "./buttonLink"
+import "@/components/form.css"
 
 function ButtonExpandWish () {
     const [expandWish,setExpandWish] = useState(false)
@@ -12,14 +13,14 @@ function ButtonExpandWish () {
 const {isModalOpenWish, openModalWish} = useIsModalOpen();    
 
 return (
-    <div>
+    <div className="formList">
         {!isModalOpenWish && (
-            <div className="overlay">
+            <div>
         <button
         aria-expanded = {expandWish}
         aria-controls="formList"
         className="buttonExpandWish"
-        onClick={expanded}>Желание:</button>
+        onClick={expanded}>Взаимодействие с желанием:</button>
         {expandWish && (
         <div id="formList">
             <ul>

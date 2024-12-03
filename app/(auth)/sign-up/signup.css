@@ -1,0 +1,69 @@
+.formSignUp {
+  width: 50%;
+  max-width: 600px;
+  min-width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.formSignUp h1.labelForm {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.formSignUp h6 {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.formSignUp input[type="text"],
+.formSignUp input[type="password"],
+.formSignUp input[type="date"],
+.formSignUp select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.formSignUp input:focus,
+.formSignUp select:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+}
+
+.formSignUp label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.formSignUp button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.formSignUp button[type="submit"]:hover {
+  background-color: #45a049;
+}
+.sign-inLogin {
+  color: blue;
+}

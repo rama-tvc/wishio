@@ -1,7 +1,8 @@
 "use client"
 import React, { useState } from "react"
-import './addWishList.css'
+import '@/components/WishLists/addWishList.css'
 import { useIsModalOpen } from "./buttonLink"
+import "@/components/form.css"
 
 function ButtonExpandList () {
     const [expand,setExpand] = useState(false)
@@ -12,21 +13,19 @@ function ButtonExpandList () {
 const {isModalOpenList, openModalList} = useIsModalOpen();    
 
 return (
-    <div>
+    <div className="formList">
         {!isModalOpenList && (
             <div>
         <button
         aria-expanded = {expand}
         aria-controls="formList"
         className="buttonExpandList"
-        onClick={expanded}>Списки</button>
+        onClick={expanded}>Взаимодействие со списком:</button>
         {expand && (
         <div id="formList">
             <ul>
                 <li>
-                    
                     <button className="formListButton" onClick={openModalList}>Создать список:</button>
-                    
                 </li>
                 <li>
                 <button className="formListButton" >Редактировать список:</button>

@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-// import { useTheme } from "./setting";
+
 
 type Wish = {
   id: number;
