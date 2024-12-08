@@ -10,38 +10,26 @@ function NavBar() {
   const navigationLists = [
     {
       id: 1,
-      pageName: "Главная",
+      pageName: "Главная страница",
       href: "/",
       logoToPage: circle,
     },
     {
       id: 2,
-      pageName: "Списки друзей",
+      pageName: "Списки желаний",
       href: "/lists",
       logoToPage: circle,
     },
     {
       id: 3,
-      pageName: "Личные данные",
+      pageName: "Настройки",
       href: "/lists/123",
       logoToPage: circle,
     },
     {
       id: 4,
-      pageName: "Создать",
+      pageName: "Q&A",
       href: "/wishes",
-      logoToPage: circle,
-    },
-    {
-      id: 5,
-      pageName: "Контакты",
-      href: "/",
-      logoToPage: circle,
-    },
-    {
-      id: 6,
-      pageName: "О нас",
-      href: "/",
       logoToPage: circle,
     },
   ];
