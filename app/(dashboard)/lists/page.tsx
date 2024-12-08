@@ -1,7 +1,7 @@
 "use client";
 
 import { createWishlist } from "@/actions/create-wishlist";
-import { getWishlists } from "@/actions/get-wishlists";
+import { getUserWishlists } from "@/actions/get-wishlists";
 import { Wishlist } from "@prisma/client";
 import { FormEventHandler, useEffect, useState } from "react";
 
@@ -9,8 +9,7 @@ export default function WishlistsPage() {
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
 
   const fetchUserWishlists = async () => {
-    const response = await fetch("/api/wishlists?userId=1");
-    const data = await response.json();
+    const data = await getUserWishlists();
 
     setWishlists(data);
   };
