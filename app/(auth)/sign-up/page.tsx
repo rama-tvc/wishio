@@ -36,7 +36,10 @@ export default function SignUpPage() {
           <>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name
                 </label>
                 <input
@@ -50,7 +53,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email Address
                 </label>
                 <input
@@ -64,7 +70,10 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <input
@@ -108,7 +117,7 @@ export default function SignUpPage() {
               You are already signed in as {session.user?.email}.
             </p>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/wishes")}
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-500"
             >
               Go to Dashboard
@@ -119,7 +128,10 @@ export default function SignUpPage() {
         {!session && (
           <p className="text-center text-sm text-gray-500">
             Already have an account?{" "}
-            <a href="/sign-in" className="font-semibold text-indigo-600 hover:underline">
+            <a
+              href="/sign-in"
+              className="font-semibold text-indigo-600 hover:underline"
+            >
               Sign In
             </a>
           </p>

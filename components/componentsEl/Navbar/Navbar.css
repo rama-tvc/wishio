@@ -1,0 +1,47 @@
+nav {
+  width: 18vw;
+  height: 100vh;
+  box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.5);
+  position: sticky;
+  top: 0;
+}
+.navTitle {
+  margin: 0.4rem;
+  width: 95%;
+  display: flex;
+  align-items: flex-start;
+}
+.navTitle:hover {
+  background-color: #5a768c;
+}
+
+nav ul a {
+  text-decoration: none;
+}
+.logo-page {
+  width: 1.5rem;
+  height: auto;
+}
+
+.logotype-container {
+  margin-bottom: 10px;
+  background-color: #5a768c;
+  width: 100%;
+}
+.logotype-image {
+  width: 4vw;
+  height: auto;
+  display: inline;
+  margin: 5px;
+}
+.logotype-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  display: inline;
+}
+.Separator {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border: 1px solid black;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+}
