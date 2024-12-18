@@ -16,13 +16,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen  bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center px-6 py-12">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm" >
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           alt="Your Company"
           src="/logo.png"
           className="mx-auto w-16 sm:w-24 md:w-32 lg:w-40 h-auto"
         />
-       
       </div>
 
       <div className="max-w-lg w-full  bg-white rounded-lg shadow-lg p-8 space-y-6 mr-20">
@@ -31,7 +30,10 @@ export default function LoginPage() {
             <p className="text-red-500 text-center mb-4"></p>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                <label
+                  htmlFor="email"
+                  className="block text-sm/6 font-medium text-gray-900"
+                >
                   Email address
                 </label>
                 <div className="mt-2">
@@ -48,11 +50,17 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm/6 font-medium text-gray-900"
+                  >
                     Password
                   </label>
                   <div className="text-sm">
-                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    <a
+                      href="#"
+                      className="font-semibold text-indigo-600 hover:text-indigo-500"
+                    >
                       Forgot password?
                     </a>
                   </div>
@@ -96,12 +104,20 @@ export default function LoginPage() {
           </>
         ) : (
           <div className="text-center space-y-4">
-            <p className="text-gray-700">You are logged in as {session.user?.email}</p>
+            <p className="text-gray-700">
+              You are logged in as {session.user?.email}
+            </p>
             <button
               onClick={() => signOut()}
               className="rounded-md bg-red-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-red-400"
             >
               Sign Out
+            </button>
+            <button
+              onClick={() => router.push("/wishes")}
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-500"
+            >
+              Go to Dashboard
             </button>
           </div>
         )}
@@ -109,7 +125,10 @@ export default function LoginPage() {
         {!session && (
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Not a member?{" "}
-            <a href="/sign-up" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            <a
+              href="/sign-up"
+              className="font-semibold text-indigo-600 hover:text-indigo-500"
+            >
               Sign Up
             </a>
           </p>
