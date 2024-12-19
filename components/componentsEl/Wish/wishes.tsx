@@ -1,40 +1,30 @@
-"use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { getUserWish } from "@/actions/getUserWish";
 
 type Wish = {
-  id: number;
+  id: string;
   title: string;
   isReserved: boolean;
   imageUrl?: string;
 };
 
 function Wishes() {
-  const [wishes, setWishes] = useState<Wish[]>([
-    {
-      id: 1,
-      title: "Хочу айфон 16",
-      isReserved: false,
-      imageUrl:
-        "https://dictionary.cambridge.org/ru/images/thumb/circle_noun_001_02738.jpg?version=6.0.42",
-    },
-    {
-      id: 2,
-      title: "Хочу книгу по программированию",
-      isReserved: true,
-      imageUrl:
-        "https://dictionary.cambridge.org/ru/images/thumb/circle_noun_001_02738.jpg?version=6.0.42",
-    },
-    {
-      id: 3,
-      title: "Путешествие в Японию",
-      isReserved: false,
-      imageUrl:
-        "https://dictionary.cambridge.org/ru/images/thumb/circle_noun_001_02738.jpg?version=6.0.42",
-    },
-  ]);
+  const [wishes, setWishes] = useState<Wish[]>([]);
 
-  const toggleReservation = (id: number, newStatus: boolean) => {
+  useEffect(() => {
+    const fetchWishes = async () => {
+      try {
+        const data = await getUserWish();
+        setWishes(data);
+      } catch (e) {
+        console.error("Failed to fetch wishes:", e);
+      }
+    };
+    fetchWishes();
+  }, []);
+
+  const toggleReservation = (id: string, newStatus: boolean) => {
     const updatedWishes = wishes.map((wish) =>
       wish.id === id ? { ...wish, isReserved: newStatus } : wish
     );
