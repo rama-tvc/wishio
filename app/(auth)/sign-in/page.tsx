@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push("/lists");
+    router.push("/wishes");
   };
 
   return (
