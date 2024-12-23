@@ -6,7 +6,9 @@ module.exports = {
         hostname: 'dictionary.cambridge.org',
         port: '',
         pathname: '/**', 
+        
       },
     ],
   },
+  basePath: '/my-app',
 };

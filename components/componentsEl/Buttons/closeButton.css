@@ -1,15 +1,15 @@
 .cl-btn-2 {
-  margin-top: 20px;
   display: flex;
   justify-content: center;
-  margin-left: 30%; /*Здесь расположение всей кнопки*/
 }
+
 .cl-btn-2 div {
   cursor: pointer;
   position: relative;
   height: 68px;
   width: 50px;
 }
+
 .cl-btn-2 .leftright {
   height: 4px;
   width: 50px;
@@ -20,6 +20,7 @@
   transform: rotate(45deg);
   transition: all 0.3s ease-in;
 }
+
 .cl-btn-2 .rightleft {
   height: 4px;
   width: 50px;
@@ -30,8 +31,9 @@
   transform: rotate(-45deg);
   transition: all 0.3s ease-in;
 }
+
 .cl-btn-2 .close-btn {
-  margin: 45px 0 0 -30px; /*здесь расположение надписи */
+  margin: 45px 0 0 -5px; /* здесь расположение надписи */
   position: absolute;
   color: #337ab7;
   font-family: Tahoma, sans-serif;
@@ -41,14 +43,17 @@
   transition: all 0.3s ease-in;
   opacity: 0;
 }
+
 .cl-btn-2 div:hover .leftright {
   transform: rotate(-45deg);
   background-color: #000;
 }
+
 .cl-btn-2 div:hover .rightleft {
   transform: rotate(45deg);
   background-color: #000;
 }
+
 .cl-btn-2 div:hover .close-btn {
   opacity: 1;
 }

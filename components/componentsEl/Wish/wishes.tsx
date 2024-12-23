@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { getUserWish } from "@/actions/getUserWish";
+import setUserReserve from "@/actions/setUserReserve";
 
 type Wish = {
   id: string;
@@ -24,11 +25,16 @@ function Wishes() {
     fetchWishes();
   }, []);
 
-  const toggleReservation = (id: string, newStatus: boolean) => {
-    const updatedWishes = wishes.map((wish) =>
-      wish.id === id ? { ...wish, isReserved: newStatus } : wish
-    );
-    setWishes(updatedWishes);
+  const toggleReservation = async (id: string, newStatus: boolean) => {
+    try {
+      const updatedWishes = wishes.map((wish) =>
+        wish.id === id ? { ...wish, isReserved: newStatus } : wish
+      );
+      setWishes(updatedWishes);
+      await setUserReserve(id, newStatus);
+    } catch (e) {
+      console.error("Error reservation", e);
+    }
   };
 
   return (

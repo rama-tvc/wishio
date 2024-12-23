@@ -11,7 +11,7 @@ function NavBar() {
     {
       id: 1,
       pageName: "Публичная страница",
-      href: "/wishes",
+      href: "/wishes/1",
       logoToPage: circle,
     },
     {

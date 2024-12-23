@@ -1,6 +1,5 @@
 import Wishes from "../Wish/wishes";
-import "@/components/componentsEl//WishLists/addWishList.css";
-import "@/components/componentsEl//form.css";
+
 import "./wishListToMain.css";
 
 function WishListToMain() {
