@@ -32,6 +32,7 @@ function AddWishList() {
     }
 
     try {
+      const userId = "some-user-id"; // Замените на реальный userId
       const response = await fetch(`${basePath}/api/wishlist`, {
         method: "POST",
         headers: {
@@ -41,8 +42,11 @@ function AddWishList() {
           title: formData.title,
           description: formData.description,
           visibility: formData.visibility,
+          userId,
         }),
       });
+
+      console.log("Response status:", response.status);
 
       if (!response.ok) {
         throw new Error("Ошибка при создании списка желаний.");

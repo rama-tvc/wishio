@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push("/wishes");
+    router.push("/wishes/1");
   };
 
   return (
@@ -114,7 +114,7 @@ export default function LoginPage() {
               Sign Out
             </button>
             <button
-              onClick={() => router.push("/wishes")}
+              onClick={() => router.push("/wishes/1")}
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-500"
             >
               Go to Dashboard

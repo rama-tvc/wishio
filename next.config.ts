@@ -10,5 +10,5 @@ module.exports = {
       },
     ],
   },
-  basePath: '/my-app',
+  // basePath: '/my-app',
 };
