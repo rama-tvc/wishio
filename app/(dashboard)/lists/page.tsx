@@ -1,7 +1,7 @@
 "use client";
 
 import { createWishlist } from "@/actions/create-wishlist";
-import { getUserWishlists } from "@/actions/get-wishlists";
+import getUserWishlists from "@/actions/get-wishlists";
 import { Wishlist } from "@prisma/client";
 import { FormEventHandler, useEffect, useState } from "react";
 

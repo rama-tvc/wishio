@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export const getUserWishlists = async () => {
+const getUserWishlists = async () => {
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) {
@@ -18,3 +18,4 @@ export const getUserWishlists = async () => {
 
   return userWishlists;
 };
+export default getUserWishlists;
