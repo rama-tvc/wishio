@@ -12,6 +12,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru">
+      <head>
+        <title>Wishio</title>
+        <meta
+          name="description"
+          content="Описание страницы или проекта для SEO"
+        />
+      </head>
       <body>
         <Providers>
           <div className="flex min-h-screen flex-col">
