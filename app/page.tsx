@@ -1,14 +1,15 @@
-
-// import { redirect } from "next/navigation";
-import Dashboard from "../components/Dashboard";
-import LoginPage from "./(auth)/sign-in/page";
-
-
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Features from "@/components/Features";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-      
-      <LoginPage/>
-      // <Dashboard/>
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <Hero />
+        <Features />
+      </main>
+    </div>
   );
 }
