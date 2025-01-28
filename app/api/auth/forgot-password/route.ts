@@ -1,3 +1,39 @@
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Password reset instructions sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Email is required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createTransport } from "nodemailer";

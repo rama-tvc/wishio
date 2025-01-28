@@ -1,3 +1,36 @@
+/**
+ * @swagger
+ * /api/auth/verify:
+ *   post:
+ *     summary: Verify user email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *             properties:
+ *               token:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid or expired verification token
+ *       500:
+ *         description: Internal server error
+ */
+
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 

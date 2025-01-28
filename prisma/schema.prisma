@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String    @unique
+    email         String     @unique
     password      String?
     image         String?
     emailVerified DateTime?
     birthdate     DateTime?
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
+    createdAt     DateTime   @default(now())
+    updatedAt     DateTime   @updatedAt
+    wishLists     WishList[]
 }
 
 model VerificationToken {
@@ -34,4 +35,54 @@ model PasswordResetToken {
     token     String   @unique
     expires   DateTime
     createdAt DateTime @default(now())
+}
+
+enum WishListStatus {
+    ACTIVE
+    ARCHIVED
+    COMPLETED
+}
+
+model WishList {
+    id          String         @id @default(cuid())
+    userId      String
+    title       String
+    description String
+    deadline    DateTime
+    status      WishListStatus @default(ACTIVE)
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+    shareToken  String?        @unique
+    wishes      WishListWish[]
+    user        User           @relation(fields: [userId], references: [id])
+}
+
+enum WishStatus {
+    RESERVED
+    UNRESERVED
+}
+
+model Wish {
+    id          String         @id @default(cuid())
+    title       String
+    description String
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @updatedAt
+    image       String?
+    price       Int?
+    link        String?
+    status      WishStatus     @default(UNRESERVED)
+    wishLists   WishListWish[]
+    reservedBy  String?
+}
+
+model WishListWish {
+    id         String   @id @default(cuid())
+    wishListId String
+    wishId     String
+    createdAt  DateTime @default(now())
+    wishList   WishList @relation(fields: [wishListId], references: [id], onDelete: Cascade)
+    wish       Wish     @relation(fields: [wishId], references: [id], onDelete: Cascade)
+
+    @@unique([wishListId, wishId])
 }

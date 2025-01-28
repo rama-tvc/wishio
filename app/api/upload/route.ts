@@ -1,3 +1,39 @@
+/**
+ * @swagger
+ * /api/upload:
+ *   post:
+ *     summary: Upload a file to S3
+ *     tags: [Upload]
+ *     security:
+ *       - NextAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file (JPEG, PNG, or WEBP, max 5MB)
+ *     responses:
+ *       200:
+ *         description: File uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 publicUrl:
+ *                   type: string
+ *                   description: Public URL of the uploaded file
+ *       400:
+ *         description: Invalid file type or size
+ *       500:
+ *         description: Error uploading file
+ */
+
 // /pages/api/upload.js
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse, NextRequest } from "next/server";
