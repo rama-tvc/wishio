@@ -34,7 +34,7 @@ export default function Header() {
           )}
           {session ? (
             <>
-              <Avatar>
+              <Avatar onClick={() => router.push("/profile")}>
                 <AvatarImage
                   src={session.user?.image || "/placeholder.svg"}
                   alt={session.user?.name || "User avatar"}
