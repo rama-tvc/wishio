@@ -29,7 +29,6 @@ export default function Login() {
       password,
     });
     if (result?.error) {
-      // Обработка ошибки
       console.error(result.error);
     } else {
       router.push("/dashboard");
