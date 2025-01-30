@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/table";
 import { Gift, Calendar, MoreVertical, Search, Filter } from "lucide-react";
 import CreateWishlist from "@/components/CreateWishlist";
+import Filters from "@/components/ui/Filters";
+import { useFilter } from "@/hooks/useFilter";
 
 interface WishlistItem {
   id: string;
@@ -40,46 +42,46 @@ export default function Dashboard() {
     {
       id: "2",
       title: "Новый год 2026",
-      date: "2025-12-31",
+      date: "2025-05-31",
       itemCount: 3,
-      status: "active",
+      status: "archived",
       lastModified: "2024-01-19",
     },
   ]);
+  const [activeTab, setActiveTab] = useState<string>("all");
+
+  const filteredWishlists = wishlists.filter((wishlist) => {
+    if (activeTab === "all") return true;
+    return wishlist.status === activeTab;
+  });
+  const ButtonHandleHidingFilter = () => {
+    const { togglePanel } = useFilter();
+    return (
+      <Button variant="outline" onClick={togglePanel}>
+        <Filter className="h-4 w-4 mr-2" />
+        Фильтры
+      </Button>
+    );
+  };
+  const { isOpen } = useFilter();
 
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-64 border-r bg-white p-6">
-        <div className="font-semibold mb-4">Фильтры</div>
-        <div className="space-y-4">
-          <div>
-            <div className="text-sm text-gray-500 mb-2">Статус</div>
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2">
-                <Checkbox />
-                <span className="text-sm">Активные</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <Checkbox />
-                <span className="text-sm">Архивные</span>
-              </label>
-            </div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 mb-2">Сортировка</div>
-            <div className="space-y-2">
-              <label className="flex items-center space-x-2">
-                <Checkbox />
-                <span className="text-sm">По дате создания</span>
-              </label>
-              <label className="flex items-center space-x-2">
-                <Checkbox />
-                <span className="text-sm">По названию</span>
-              </label>
-            </div>
-          </div>
-        </div>
+
+      <div
+        className={`transition-transform duration-300 ease-in-out ${
+          isOpen ? "-translate-x-180" : "-translate-x-full"
+        }
+        w-64 = "true"
+         border-r = "true"
+        bg-white = "true"
+        p-6 = "true"`}
+      >
+        <Filters
+          data={wishlists}
+          onSort={(sortedData) => setWishlists(sortedData)}
+        />
       </div>
 
       {/* Main Content */}
@@ -92,15 +94,16 @@ export default function Dashboard() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <Input placeholder="Поиск списков..." className="pl-10 w-64" />
               </div>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Фильтры
-              </Button>
+              <ButtonHandleHidingFilter />
               <CreateWishlist />
             </div>
           </div>
 
-          <Tabs defaultValue="all" className="mb-6">
+          <Tabs
+            defaultValue="active"
+            className="mb-6"
+            onValueChange={(value) => setActiveTab(value)}
+          >
             <TabsList>
               <TabsTrigger value="all">Все списки</TabsTrigger>
               <TabsTrigger value="active">Активные</TabsTrigger>
@@ -124,34 +127,48 @@ export default function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {wishlists.map((wishlist) => (
-                  <TableRow key={wishlist.id}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={`/wishlist/${wishlist.id}`}
-                        className="font-medium hover:underline"
-                      >
-                        {wishlist.title}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{wishlist.date}</TableCell>
-                    <TableCell>{wishlist.itemCount}</TableCell>
-                    <TableCell>{wishlist.lastModified}</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        {wishlist.status === "active" ? "Активный" : "Архивный"}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
+                {filteredWishlists.length > 0 ? (
+                  filteredWishlists.map((wishlist) => (
+                    <TableRow key={wishlist.id}>
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={`/wishlist/${wishlist.id}`}
+                          className="font-medium hover:underline"
+                        >
+                          {wishlist.title}
+                        </Link>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-500">{wishlist.date}</span>
+                      </TableCell>
+                      <TableCell>{wishlist.itemCount}</TableCell>
+                      <TableCell>{wishlist.lastModified}</TableCell>
+                      <TableCell>
+                        {wishlist.status === "active" ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Активный
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Архивный
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-4 text-gray-500"
+                    >
+                      Нет данных
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,11 +20,37 @@ export default function CreateWishlist() {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика создания списка желаний
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("date", date);
+    formData.append("description", description);
+
+    try {
+      const response = await fetch("api/profile/update", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Profile updated:", data);
+      } else {
+        console.error("Error updating profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
     console.log("Create wishlist:", title, date, description);
+    setTitle("");
+    setDate(new Date().toISOString().split("T")[0]);
+    setDescription("");
   };
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    setDate(today);
+  }, []);
 
   return (
     <Dialog>

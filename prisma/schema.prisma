@@ -49,24 +49,29 @@ model User {
 }
 
 model Wishlist {
-    id        String   @id @default(cuid())
-    title     String
-    userId    String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id])
-    wishes    Wish[]
+    id          String   @id @default(cuid())
+    title       String
+    description String?
+    userId      String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    user        User     @relation(fields: [userId], references: [id])
+    wishes      Wish[]
 }
 
 model Wish {
-    id         String     @id @default(cuid())
-    title      String
-    userId     String
-    wishlistId String?
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-    user       User       @relation(fields: [userId], references: [id])
-    wishlist   Wishlist[]
+    id          String    @id @default(cuid())
+    name        String
+    description String?
+    price       Float?
+    userId      String
+    wishlistId  String?
+    reserved    Boolean   @default(false)
+    imageUrl    String?
+    createdAt   DateTime? @default(now())
+    updatedAt   DateTime? @updatedAt
+    user        User      @relation(fields: [userId], references: [id])
+    wishlist    Wishlist? @relation(fields: [wishlistId], references: [id])
 }
 
 model VerificationRequest {

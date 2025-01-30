@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import { FilterProvider } from "@/hooks/useFilter";
 
 export default function RootLayout({
   children,
@@ -21,12 +22,14 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            {children}
-            <Footer />
-            <Toaster />
-          </div>
+          <FilterProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              {children}
+              <Footer />
+              <Toaster />
+            </div>
+          </FilterProvider>
         </Providers>
       </body>
     </html>

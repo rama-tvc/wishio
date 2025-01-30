@@ -15,14 +15,59 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Profile() {
-  const [name, setName] = useState("Иван Иванов");
-  const [email, setEmail] = useState("ivan@example.com");
-  const [birthdate, setBirthdate] = useState("1990-01-01");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [birthdate, setBirthdate] = useState("2001-01-01");
+  const [imageSrc, setImageSrc] = useState<string>("/3692220.png");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageChange = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+
+    input.onchange = (event: Event) => {
+      const file = (event.target as HTMLInputElement)?.files?.[0];
+      if (file) {
+        setSelectedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImageSrc(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    input.click();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет логика обновления профиля
-    console.log("Update profile:", name, email, birthdate);
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("email", email);
+    formData.append("birthdate", birthdate);
+
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+
+    try {
+      const response = await fetch("api/profile/update", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Profile updated:", data);
+      } else {
+        console.error("Error updating profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -35,10 +80,18 @@ export default function Profile() {
         <CardContent>
           <div className="flex items-center space-x-4 mb-6">
             <Avatar className="w-20 h-20">
-              <AvatarImage src="/placeholder.svg" alt="Profile picture" />
+              <AvatarImage src={imageSrc} alt="Profile picture" />
               <AvatarFallback>ИИ</AvatarFallback>
             </Avatar>
-            <Button>Изменить фото</Button>
+            <label
+              htmlFor="upload-photo"
+              className="relative cursor-pointer inline-block"
+              onClick={handleImageChange}
+            >
+              <Button className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-lg">
+                Изменить фото
+              </Button>
+            </label>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
@@ -48,6 +101,7 @@ export default function Profile() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  placeholder="Ваше имя"
                   required
                 />
               </div>
@@ -58,6 +112,7 @@ export default function Profile() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@mail.com"
                   required
                 />
               </div>
