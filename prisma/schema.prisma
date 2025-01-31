@@ -18,6 +18,7 @@ model User {
     createdAt     DateTime   @default(now())
     updatedAt     DateTime   @updatedAt
     wishLists     WishList[]
+    
 }
 
 model VerificationToken {

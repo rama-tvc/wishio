@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
 import Link from "next/link";
-import {} from "next-auth/react";
 
 export default function Register() {
   const [email, setEmail] = useState("");
