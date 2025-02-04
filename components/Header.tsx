@@ -16,7 +16,6 @@ export default function Header() {
     router.push("/login");
   };
 
-  console.log("session", session);
   return (
     <header className="py-4 px-6 bg-white shadow-sm">
       <div className="container mx-auto flex justify-between items-center">

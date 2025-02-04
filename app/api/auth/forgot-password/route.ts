@@ -38,6 +38,8 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createTransport } from "nodemailer";
 import crypto from "crypto";
+import { render } from "@react-email/render";
+import PasswordResetEmail from "../emails/PasswordResetEmail";
 
 export async function POST(request: Request) {
   try {
@@ -81,18 +83,15 @@ export async function POST(request: Request) {
     // Формируем ссылку для сброса пароля
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
 
+    // Generate the HTML email using React Email
+    const emailHtml = await render(PasswordResetEmail({ resetUrl }));
+
     // Отправляем email
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
       subject: "Сброс пароля",
-      html: `
-        <h1>Сброс пароля</h1>
-        <p>Вы запросили сброс пароля. Перейдите по ссылке ниже для установки нового пароля:</p>
-        <a href="${resetUrl}">${resetUrl}</a>
-        <p>Ссылка действительна в течение 1 часа.</p>
-        <p>Если вы не запрашивали сброс пароля, проигнорируйте это письмо.</p>
-      `,
+      html: emailHtml,
     });
 
     return NextResponse.json(

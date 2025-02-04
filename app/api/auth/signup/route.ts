@@ -42,6 +42,8 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createTransport } from "nodemailer";
 import crypto from "crypto";
+import ConfirmRegister from "../emails/ConfirmRegister";
+import { render } from "@react-email/render";
 
 export async function POST(request: Request) {
   try {
@@ -96,11 +98,7 @@ export async function POST(request: Request) {
       from: process.env.SMTP_FROM,
       to: email,
       subject: "Подтвердите вашу регистрацию",
-      html: `
-        <h1>Подтвердите ваш email</h1>
-        <p>Для завершения регистрации, пожалуйста, перейдите по ссылке:</p>
-        <a href="${verificationUrl}">${verificationUrl}</a>
-      `,
+      html: await render(ConfirmRegister({ verificationUrl })),
     });
 
     return NextResponse.json(
