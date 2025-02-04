@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { MobileMenu } from "./MobileMenu";
 
 export default function Header() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -34,7 +33,7 @@ export default function Header() {
           )}
           {session ? (
             <>
-              <Avatar>
+              <Avatar onClick={() => router.push("/profile")}>
                 <AvatarImage
                   src={session.user?.image || "/placeholder.svg"}
                   alt={session.user?.name || "User avatar"}
@@ -47,9 +46,9 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Button onClick={() => signIn()} variant="outline">
-                Войти
-              </Button>
+              <Link href="/login">
+                <Button>Войти</Button>
+              </Link>
               <Link href="/register">
                 <Button>Регистрация</Button>
               </Link>
