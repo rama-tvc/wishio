@@ -30,6 +30,7 @@ export default function ForgotPassword() {
         setMessage(data.message || "Something went wrong");
       }
     } catch (error) {
+      console.error(error);
       setStatus("error");
       setMessage("An error occurred. Please try again.");
     }

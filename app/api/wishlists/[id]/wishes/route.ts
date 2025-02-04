@@ -21,7 +21,7 @@ import { authOptions } from "../../../auth/[...nextauth]/route";
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             required:
@@ -41,7 +41,8 @@ import { authOptions } from "../../../auth/[...nextauth]/route";
  *                 description: URL link to the wish item
  *               image:
  *                 type: string
- *                 description: Image URL for the wish item
+ *                 format: binary
+ *                 description: Image file (JPEG, PNG, or WEBP, max 5MB)
  *     responses:
  *       200:
  *         description: Wish added successfully
@@ -62,13 +63,18 @@ import { authOptions } from "../../../auth/[...nextauth]/route";
  *                   type: string
  *                 image:
  *                   type: string
+ *                   description: Public URL of the uploaded image
  *                 status:
  *                   type: string
  *                   enum: [ACTIVE, RESERVED, COMPLETED]
+ *       400:
+ *         description: Invalid request or file type/size
  *       401:
  *         description: Unauthorized
  *       404:
  *         description: Wishlist not found or not authorized
+ *       500:
+ *         description: Error uploading file or creating wish
  */
 export async function POST(
   request: Request,
@@ -95,16 +101,48 @@ export async function POST(
     );
   }
 
-  const { title, description, price, link, image } = await request.json();
+  // Handle multipart form data
+  const formData = await request.formData();
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const price = formData.get("price") ? Number(formData.get("price")) : null;
+  const link = formData.get("link") as string;
+  const imageFile = formData.get("image") as File;
 
-  // Создаем новое желание и связываем его со списком
+  let imageUrl = null;
+  if (imageFile) {
+    // Create a new FormData object for the upload
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", imageFile);
+
+    // Upload the image
+    const uploadResponse = await fetch(
+      `${request.url.split("/wishlists")[0]}/upload`,
+      {
+        method: "POST",
+        body: uploadFormData,
+      }
+    );
+
+    if (!uploadResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to upload image" },
+        { status: 500 }
+      );
+    }
+
+    const { publicUrl } = await uploadResponse.json();
+    imageUrl = publicUrl;
+  }
+
+  // Create new wish and link it to the wishlist
   const wish = await prisma.wish.create({
     data: {
       title,
       description,
       price,
       link,
-      image,
+      image: imageUrl,
       wishLists: {
         create: {
           wishList: {

@@ -16,11 +16,6 @@ import { authOptions } from "../../auth/[...nextauth]/route";
  *         schema:
  *           type: string
  *         description: The wishlist ID
- *       - in: query
- *         name: token
- *         schema:
- *           type: string
- *         description: Share token for accessing private wishlists
  *     responses:
  *       200:
  *         description: The wishlist data
@@ -52,25 +47,9 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  const { searchParams } = new URL(request.url);
-  const token = searchParams.get("token");
-
   const wishList = await prisma.wishList.findUnique({
     where: {
       id: params.id,
-      OR: [
-        { shareToken: token },
-        {
-          userId: session?.user?.email
-            ? (
-                await prisma.user.findUnique({
-                  where: { email: session.user.email },
-                })
-              )?.id
-            : undefined,
-        },
-      ],
     },
     include: {
       wishes: {

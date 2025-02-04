@@ -21,7 +21,7 @@ import { authOptions } from "../../auth/[...nextauth]/route";
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -35,10 +35,8 @@ import { authOptions } from "../../auth/[...nextauth]/route";
  *                 type: string
  *               image:
  *                 type: string
- *               status:
- *                 type: string
- *                 enum: [RESERVED, UNRESERVED]
- *                 description: Use RESERVED to reserve the wish, UNRESERVED to cancel reservation
+ *                 format: binary
+ *                 description: Image file (JPEG, PNG, or WEBP, max 5MB)
  *     responses:
  *       200:
  *         description: Updated wish
@@ -59,18 +57,20 @@ import { authOptions } from "../../auth/[...nextauth]/route";
  *                   type: string
  *                 image:
  *                   type: string
- *                 status:
- *                   type: string
- *                   enum: [RESERVED, UNRESERVED]
+ *                   description: Public URL of the uploaded image
  *                 reservedBy:
  *                   type: string
  *                   description: User ID who reserved the wish
+ *       400:
+ *         description: Invalid request or file type/size
  *       401:
  *         description: Unauthorized
  *       403:
  *         description: Not authorized to modify this wish
  *       404:
  *         description: Wish not found
+ *       500:
+ *         description: Error uploading file or updating wish
  */
 export async function PUT(
   request: Request,
@@ -101,53 +101,51 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { title, description, price, link, image, status } =
-    await request.json();
-
-  // Проверяем, принадлежит ли желание списку пользователя
+  // Check if user owns the wish
   const isOwner = wish.wishLists.some((wl) => wl.wishList.userId === user!.id);
 
-  // Если пользователь не владелец
   if (!isOwner) {
-    // Разрешаем только резервирование/отмену резервирования
-    if (status === undefined) {
-      return NextResponse.json(
-        { error: "Only reservation status can be modified" },
-        { status: 403 }
-      );
-    }
-
-    // Проверяем, что подарок не зарезервирован другим пользователем
-    if (
-      wish.status === "RESERVED" &&
-      wish.reservedBy !== user!.id &&
-      status === "RESERVED"
-    ) {
-      return NextResponse.json(
-        { error: "This wish is already reserved by another user" },
-        { status: 403 }
-      );
-    }
-
-    // Проверяем, что пользователь отменяет свою собственную резервацию
-    if (status === "UNRESERVED" && wish.reservedBy !== user!.id) {
-      return NextResponse.json(
-        { error: "You can only cancel your own reservation" },
-        { status: 403 }
-      );
-    }
-
-    const updatedWish = await prisma.wish.update({
-      where: { id: params.id },
-      data: {
-        status,
-        reservedBy: status === "RESERVED" ? user!.id : null,
-      },
-    });
-    return NextResponse.json(updatedWish);
+    return NextResponse.json(
+      { error: "Not authorized to modify this wish" },
+      { status: 403 }
+    );
   }
 
-  // Если пользователь владелец, он может обновить все поля
+  // Handle multipart form data
+  const formData = await request.formData();
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const price = formData.get("price") ? Number(formData.get("price")) : null;
+  const link = formData.get("link") as string;
+  const imageFile = formData.get("image") as File;
+
+  let imageUrl = wish.image; // Keep existing image by default
+  if (imageFile) {
+    // Create a new FormData object for the upload
+    const uploadFormData = new FormData();
+    uploadFormData.append("file", imageFile);
+
+    // Upload the image
+    const uploadResponse = await fetch(
+      `${request.url.split("/wishes")[0]}/upload`,
+      {
+        method: "POST",
+        body: uploadFormData,
+      }
+    );
+
+    if (!uploadResponse.ok) {
+      return NextResponse.json(
+        { error: "Failed to upload image" },
+        { status: 500 }
+      );
+    }
+
+    const { publicUrl } = await uploadResponse.json();
+    imageUrl = publicUrl;
+  }
+
+  // Update the wish with new data
   const updatedWish = await prisma.wish.update({
     where: { id: params.id },
     data: {
@@ -155,11 +153,9 @@ export async function PUT(
       description,
       price,
       link,
-      image,
-      status,
-      // Если владелец снимает резервацию, очищаем reservedBy
-      reservedBy: status === "UNRESERVED" ? null : wish.reservedBy,
+      image: imageUrl,
     },
   });
+
   return NextResponse.json(updatedWish);
 }
