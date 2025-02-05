@@ -18,13 +18,13 @@ export default function Hero() {
             Начать бесплатно
           </Button>
         </div>
-        <div className="md:w-1/2">
+        <div className="md:w-1/3">
           <Image
-            src="/placeholder.svg?height=400&width=400"
+            src="/Reserved.jpg"
             alt="Wishio illustration"
-            width={400}
-            height={400}
-            className="rounded-lg shadow-lg"
+            width={600}
+            height={350}
+            className="rounded-lg shadow-lg min-w-[600px] max-h-[350px] w-full object-cover"
           />
         </div>
       </div>

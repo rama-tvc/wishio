@@ -1,6 +1,7 @@
-"use client";
+// app/wishlist/[userId]/[wishlistId]/page.tsx
+"use client"; // говорим, что это Client Component
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ interface Gift {
 }
 
 export default function WishlistPage() {
-  const [wishlist] = useState({
+  const [wishlist, setWishlist] = useState({
     id: "1",
     title: "День рождения 2025",
     description: "Мой список желаний на 35-летие",
@@ -57,6 +58,22 @@ export default function WishlistPage() {
     ],
   });
 
+  const [activeTab, setActiveTab] = useState<string>("all");
+  const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
+
+  const toggleLiked = (id: string) => {
+    setLiked((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const filteredWishes = wishlist.gifts.filter((gift: Gift) => {
+    if (activeTab === "all") return true;
+    if (activeTab === "available") return !gift.reserved;
+    if (activeTab === "reserved") return gift.reserved;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8 px-4">
@@ -74,7 +91,11 @@ export default function WishlistPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="all" className="mb-8">
+        <Tabs
+          defaultValue="all"
+          className="mb-8"
+          onValueChange={(value) => setActiveTab(value)}
+        >
           <TabsList>
             <TabsTrigger value="all">Все подарки</TabsTrigger>
             <TabsTrigger value="available">Доступные</TabsTrigger>
@@ -83,33 +104,56 @@ export default function WishlistPage() {
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlist.gifts.map((gift) => (
-            <Card key={gift.id} className="overflow-hidden">
-              <div className="relative h-48 bg-gray-100">
-                <Image
-                  src={gift.image || "/placeholder.svg"}
-                  alt={gift.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardHeader>
-                <CardTitle>{gift.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">{gift.description}</p>
-                <p className="text-lg font-semibold mt-2">{gift.price} ₽</p>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" disabled={gift.reserved}>
-                  {gift.reserved ? "Зарезервировано" : "Зарезервировать"}
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Heart className="h-4 w-4" />
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+          {filteredWishes.length > 0 ? (
+            filteredWishes.map((gift: Gift) => (
+              <Card key={gift.id} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-100">
+                  <Image
+                    src={gift.image || "/placeholder.svg"}
+                    alt={gift.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <CardHeader>
+                  <CardTitle>{gift.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600">{gift.description}</p>
+                  <p className="text-lg font-semibold mt-2">{gift.price} тг</p>
+                </CardContent>
+                <CardFooter className="flex justify-between">
+                  {gift.reserved ? (
+                    <Button variant="outline" disabled>
+                      Зарезервировано
+                    </Button>
+                  ) : (
+                    <Button variant="outline">
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Поделиться
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      toggleLiked(gift.id);
+                    }}
+                  >
+                    <Heart
+                      className="h-6 w-6 transition-colors duration-200"
+                      fill={liked[gift.id] ? "red" : "none"}
+                      color={liked[gift.id] ? "red" : "gray"}
+                    />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))
+          ) : (
+            <div className="col-span-3">
+              <p className="text-center text-gray-600">Отсутствует</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
