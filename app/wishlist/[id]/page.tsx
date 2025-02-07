@@ -1,7 +1,6 @@
-// app/wishlist/[userId]/[wishlistId]/page.tsx
-"use client"; // говорим, что это Client Component
-
+"use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,54 +11,82 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share2, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import AddGift from "@/components/AddGift";
+import { useParams } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+import { useSession } from "next-auth/react";
+import SharedLink from "@/components/Sharing";
 
-interface Gift {
+interface Wish {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  price: number;
-  image: string;
-  reserved: boolean;
+  price?: number;
+  link?: string;
+  status: "RESERVED" | "UNRESERVED";
+  image?: string;
+}
+
+interface Wishlist {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  wishes: { wish: Wish }[];
 }
 
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState({
-    id: "1",
-    title: "День рождения 2025",
-    description: "Мой список желаний на 35-летие",
-    date: "2025-06-15",
-    gifts: [
-      {
-        id: "1",
-        name: "Книга 'Мастер и Маргарита'",
-        description: "Любимое произведение, хочу иметь в коллекционном издании",
-        price: 2000,
-        image: "/placeholder.svg?height=200&width=200",
-        reserved: false,
-      },
-      {
-        id: "2",
-        name: "Фитнес-браслет",
-        description: "Для отслеживания активности и сна",
-        price: 5000,
-        image: "/placeholder.svg?height=200&width=200",
-        reserved: true,
-      },
-      {
-        id: "3",
-        name: "Кофемашина",
-        description: "Автоматическая кофемашина для дома",
-        price: 30000,
-        image: "/placeholder.svg?height=200&width=200",
-        reserved: false,
-      },
-    ],
-  });
+  const { data: session } = useSession();
+  const params = useParams();
+  const wishlistId = Array.isArray(params?.id)
+    ? params.id[0]
+    : params?.id || "";
+  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<string>("all");
   const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const response = await fetch(`/api/wishlists/${wishlistId}`);
+        if (!response.ok) {
+          throw new Error("Ошибка загрузки списка желаемого");
+        }
+
+        const data: Wishlist = await response.json();
+        setWishlist(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке:", error);
+        toast({
+          title: "Ошибка",
+          description: "Не удалось загрузить список желаемого",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (wishlistId) {
+      fetchWishlist();
+    }
+  }, [wishlistId, session]);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Загрузка...</p>;
+  }
+
+  if (!wishlist) {
+    return (
+      <p className="text-center text-red-500">Список желаемого не найден</p>
+    );
+  }
+  const wishes = wishlist.wishes
+    .slice()
+    .reverse()
+    .map((item) => item.wish);
 
   const toggleLiked = (id: string) => {
     setLiked((prev) => ({
@@ -68,11 +95,13 @@ export default function WishlistPage() {
     }));
   };
 
-  const filteredWishes = wishlist.gifts.filter((gift: Gift) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "available") return !gift.reserved;
-    if (activeTab === "reserved") return gift.reserved;
-  });
+  const filteredWishes = wishes
+    ? wishes.filter((wish: Wish) => {
+        if (activeTab === "all") return true;
+        if (activeTab === "UNRESERVED") return wish.status === "UNRESERVED";
+        if (activeTab === "RESERVED") return wish.status === "RESERVED";
+      })
+    : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,10 +112,7 @@ export default function WishlistPage() {
             <p className="text-gray-600">{wishlist.description}</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="outline">
-              <Share2 className="h-4 w-4 mr-2" />
-              Поделиться
-            </Button>
+            <SharedLink />
             <AddGift />
           </div>
         </div>
@@ -98,52 +124,55 @@ export default function WishlistPage() {
         >
           <TabsList>
             <TabsTrigger value="all">Все подарки</TabsTrigger>
-            <TabsTrigger value="available">Доступные</TabsTrigger>
-            <TabsTrigger value="reserved">Зарезервированные</TabsTrigger>
+            <TabsTrigger value="UNRESERVED">Доступные</TabsTrigger>
+            <TabsTrigger value="RESERVED">Зарезервированные</TabsTrigger>
           </TabsList>
         </Tabs>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWishes.length > 0 ? (
-            filteredWishes.map((gift: Gift) => (
-              <Card key={gift.id} className="overflow-hidden">
+            filteredWishes.map((wish: Wish) => (
+              <Card key={wish.id} className="overflow-hidden">
                 <div className="relative h-48 bg-gray-100">
                   <Image
-                    src={gift.image || "/placeholder.svg"}
-                    alt={gift.name}
+                    src={wish.image || "/placeholder.png"}
+                    alt={wish.title || ""}
                     fill
-                    className="object-cover"
+                    className="mx-auto"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "";
+                    }}
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>{gift.name}</CardTitle>
+                  <CardTitle>{wish.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">{gift.description}</p>
-                  <p className="text-lg font-semibold mt-2">{gift.price} тг</p>
+                  <p className="text-gray-600">{wish.description}</p>
+                  <p className="text-lg font-semibold mt-2">{wish.price} тг</p>
+                  <span className="text-lg font-semibold mt-2 hover:underline">
+                    <Link href={`https://${wish.link}`}> {wish.link} </Link>
+                  </span>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                  {gift.reserved ? (
+                  {wish.status === "UNRESERVED" ? (
+                    <Button variant="outline">Зарезервировать</Button>
+                  ) : (
                     <Button variant="outline" disabled>
                       Зарезервировано
-                    </Button>
-                  ) : (
-                    <Button variant="outline">
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Поделиться
                     </Button>
                   )}
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      toggleLiked(gift.id);
+                      toggleLiked(wish.id);
                     }}
                   >
                     <Heart
                       className="h-6 w-6 transition-colors duration-200"
-                      fill={liked[gift.id] ? "red" : "none"}
-                      color={liked[gift.id] ? "red" : "gray"}
+                      fill={liked[wish.id] ? "red" : "none"}
+                      color={liked[wish.id] ? "red" : "gray"}
                     />
                   </Button>
                 </CardFooter>

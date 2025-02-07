@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFilter } from "@/hooks/useFilter";
+import { useSession } from "next-auth/react";
 
 interface WishlistItem {
   id: string;
@@ -17,6 +18,7 @@ interface FiltersProps {
 }
 
 const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
+  const { data: session } = useSession();
   const [sortOptions, setSortOptions] = useState({
     byDate: false,
     byName: false,
@@ -47,6 +49,13 @@ const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
 
     onSort(sortedData);
   };
+  useEffect(() => {
+    // Предположим, что при каждом обновлении сессии
+    // нужно сбросить чекбоксы
+    if (session) {
+      setSortOptions({ byDate: false, byName: false });
+    }
+  }, [session]);
 
   const { isOpen } = useFilter();
 
@@ -67,7 +76,7 @@ const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
             checked={sortOptions.byDate}
             onCheckedChange={() => handleSortChange("byDate")}
           />
-          <span className="text-sm">По дате создания</span>
+          <span className="text-sm">По дате события</span>
         </label>
         <label className="flex items-center space-x-2">
           <Checkbox

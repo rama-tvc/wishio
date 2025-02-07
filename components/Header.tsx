@@ -24,7 +24,7 @@ export default function Header() {
       const data = await response.json();
       setProfile({
         name: data.user.name || "",
-        image: data.user.image || "/placeholder.svg",
+        image: data.user.image || "/placeholder.png",
       });
     } catch (error) {
       console.error("Ошибка загрузки профиля:", error);
@@ -67,7 +67,7 @@ export default function Header() {
             <>
               <Avatar onClick={() => router.push("/profile")}>
                 <AvatarImage
-                  src={profile.image || "/placeholder.svg"}
+                  src={profile.image || "/placeholder.png"}
                   alt={profile.name || "User avatar"}
                 />
                 <AvatarFallback>

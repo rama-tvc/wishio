@@ -21,7 +21,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     name: "",
     email: "",
 
-    image: "/placeholder.svg",
+    image: "/placeholder.png",
   });
 
   return (

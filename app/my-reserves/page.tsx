@@ -30,7 +30,7 @@ export default function MyReservePage() {
         name: "Книга 'Мастер и Маргарита'",
         description: "Любимое произведение, хочу иметь в коллекционном издании",
         price: 2000,
-        image: "/placeholder.svg?height=200&width=200",
+        image: "/placeholder.png",
         reserved: true,
       },
       {
@@ -38,7 +38,7 @@ export default function MyReservePage() {
         name: "Кофемашина",
         description: "Автоматическая кофемашина для дома",
         price: 30000,
-        image: "/placeholder.svg?height=200&width=200",
+        image: "/placeholder.png",
         reserved: true,
       },
     ],
@@ -84,12 +84,13 @@ export default function MyReservePage() {
               {/* Изображение */}
               <div className="relative h-56 bg-gray-100">
                 <Image
-                  src={gift.image || "/placeholder.svg"}
+                  src={gift.image || "/placeholder.png"}
                   alt={gift.name}
                   fill
-                  className="object-cover rounded-t-2xl"
+                  className="object-cover rounded-t-2xl max-h-56 max-w-52"
                 />
               </div>
+              <div></div>
 
               {/* Контент карточки */}
               <CardHeader className="p-4">

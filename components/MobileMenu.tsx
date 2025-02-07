@@ -41,7 +41,7 @@ export function MobileMenu({ isLoggedIn, onLogout }: MobileMenuProps) {
             <>
               <div className="flex items-center space-x-4">
                 <Avatar>
-                  <AvatarImage src="/placeholder.svg" alt="User avatar" />
+                  <AvatarImage src="/placeholder.png" alt="User avatar" />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <span>Профиль пользователя</span>
