@@ -1,3 +1,5 @@
+"use server";
+
 /**
  * @swagger
  * /api/auth/reset-password:
@@ -36,62 +38,54 @@
  */
 
 import prisma from "@/lib/prisma";
-import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
+import { z } from "zod";
 
-export async function POST(request: Request) {
+const ResetPasswordSchema = z.object({
+  token: z.string().min(1, "Token is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+export async function resetPassword(token: string, newPassword: string) {
   try {
-    const { token, newPassword } = await request.json();
-
-    if (!token || !newPassword) {
-      return NextResponse.json(
-        { message: "Token and new password are required" },
-        { status: 400 }
-      );
+    // Validate input
+    const result = ResetPasswordSchema.safeParse({ token, newPassword });
+    if (!result.success) {
+      throw new Error("Token and new password are required");
     }
 
-    // Находим токен в базе
+    // Find token in database
     const resetToken = await prisma.passwordResetToken.findUnique({
       where: { token },
     });
 
     if (!resetToken) {
-      return NextResponse.json(
-        { message: "Invalid reset token" },
-        { status: 400 }
-      );
+      throw new Error("Invalid reset token");
     }
 
-    // Проверяем, не истек ли токен
+    // Check if token has expired
     if (resetToken.expires < new Date()) {
       await prisma.passwordResetToken.delete({ where: { token } });
-      return NextResponse.json(
-        { message: "Reset token has expired" },
-        { status: 400 }
-      );
+      throw new Error("Reset token has expired");
     }
 
-    // Хешируем новый пароль
+    // Hash new password
     const hashedPassword = await hash(newPassword, 10);
 
-    // Обновляем пароль пользователя
+    // Update user's password
     await prisma.user.update({
       where: { email: resetToken.email },
       data: { password: hashedPassword },
     });
 
-    // Удаляем использованный токен
+    // Delete used token
     await prisma.passwordResetToken.delete({ where: { token } });
 
-    return NextResponse.json(
-      { message: "Password reset successful" },
-      { status: 200 }
-    );
+    return { success: true };
   } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Failed to reset password");
   }
 }

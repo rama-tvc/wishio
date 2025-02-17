@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-    id             String     @id @default(cuid())
-    name           String?
-    email          String     @unique
-    password       String?
-    image          String?
-    emailVerified  DateTime?
-    birthdate      DateTime?
-    createdAt      DateTime   @default(now())
-    updatedAt      DateTime   @updatedAt
-    wishLists      WishList[]
-    reservedWishes Wish[]     @relation("ReservedWishes")
+    id            String     @id @default(cuid())
+    name          String?
+    email         String     @unique
+    password      String?
+    image         String?
+    emailVerified DateTime?
+    birthdate     DateTime?
+    createdAt     DateTime   @default(now())
+    updatedAt     DateTime   @updatedAt
+    wishLists     WishList[]
+    reservedGifts Gift[]     @relation("ReservedGifts")
+    gifts         Gift[]     @relation("UserGifts")
 }
 
 model VerificationToken {
@@ -54,16 +55,16 @@ model WishList {
     createdAt   DateTime       @default(now())
     updatedAt   DateTime       @updatedAt
     shareToken  String?        @unique
-    wishes      WishListWish[]
+    gifts       WishListGift[]
     user        User           @relation(fields: [userId], references: [id])
 }
 
-enum WishStatus {
+enum GiftStatus {
     RESERVED
     UNRESERVED
 }
 
-model Wish {
+model Gift {
     id          String         @id @default(cuid())
     title       String
     description String
@@ -72,19 +73,21 @@ model Wish {
     image       String?
     price       Int?
     link        String?
-    status      WishStatus     @default(UNRESERVED)
-    wishLists   WishListWish[]
+    status      GiftStatus     @default(UNRESERVED)
+    wishLists   WishListGift[]
     reservedBy  String?
-    reserver    User?          @relation("ReservedWishes", fields: [reservedBy], references: [id])
+    reserver    User?          @relation("ReservedGifts", fields: [reservedBy], references: [id])
+    userId      String?
+    user        User?          @relation("UserGifts", fields: [userId], references: [id])
 }
 
-model WishListWish {
+model WishListGift {
     id         String   @id @default(cuid())
     wishListId String
-    wishId     String
+    giftId     String
     createdAt  DateTime @default(now())
     wishList   WishList @relation(fields: [wishListId], references: [id], onDelete: Cascade)
-    wish       Wish     @relation(fields: [wishId], references: [id], onDelete: Cascade)
+    gift       Gift     @relation(fields: [giftId], references: [id], onDelete: Cascade)
 
-    @@unique([wishListId, wishId])
+    @@unique([wishListId, giftId])
 }

@@ -1,101 +1,66 @@
-/**
- * @swagger
- * /api/upload:
- *   post:
- *     summary: Upload a file to S3
- *     tags: [Upload]
- *     security:
- *       - NextAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *                 description: Image file (JPEG, PNG, or WEBP, max 5MB)
- *     responses:
- *       200:
- *         description: File uploaded successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 publicUrl:
- *                   type: string
- *                   description: Public URL of the uploaded file
- *       400:
- *         description: Invalid file type or size
- *       500:
- *         description: Error uploading file
- */
+import { ensurePublicBucket, minioClient } from "@/lib/minio";
+import { NextRequest, NextResponse } from "next/server";
 
-// /pages/api/upload.js
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { NextResponse, NextRequest } from "next/server";
-import { v4 as uuidv4 } from "uuid";
-import path from "path";
-
-const s3 = new S3Client({
-  region: process.env.AWS_REGION || "",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+// Disable Next.js body parsing so we can use formidable
+export const config = {
+  api: {
+    bodyParser: false,
   },
-});
+};
+
+// Initialize bucket with public access
+const bucketName = process.env.MINIO_BUCKET || "wishio";
 
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
+    // Ensure bucket exists and is public
+    try {
+      await ensurePublicBucket(bucketName);
+    } catch (error) {
+      console.error("Failed to ensure bucket exists:", error);
+      return NextResponse.json(
+        { error: "Failed to initialize storage bucket" },
+        { status: 500 }
+      );
+    }
+
+    const data = await req.formData();
+    const file = data.get("file") as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
-    if (file.size > MAX_FILE_SIZE) {
+    try {
+      const objectName = `${Date.now()}-${file.name}`;
+
+      // Upload file to MinIO
+      await minioClient.putObject(bucketName, objectName, buffer, file.size, {
+        "Content-Type": file.type,
+      });
+
+      // Construct the full URL
+      const imageUrl = `${process.env.MINIO_ENDPOINT_URL}/${bucketName}/${objectName}`;
+
+      return NextResponse.json({
+        success: true,
+        fileName: objectName,
+        url: imageUrl,
+      });
+    } catch (error) {
+      console.error("MinIO upload error:", error);
       return NextResponse.json(
-        { error: "File size exceeds 5MB limit" },
-        { status: 400 }
+        { error: "Failed to upload file to storage" },
+        { status: 500 }
       );
     }
-
-    // Проверка типа файла
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "File type not allowed" },
-        { status: 400 }
-      );
-    }
-
-    const buffer = await file.arrayBuffer();
-    const fileExtension = path.extname(file.name);
-    const fileName = `${uuidv4()}${fileExtension}`;
-
-    const params = {
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: `images/${fileName}`,
-      Body: Buffer.from(buffer),
-      ContentType: file.type,
-    };
-
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
-
-    const publicUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/images/${fileName}`;
-
-    return NextResponse.json({ publicUrl }, { status: 200 });
   } catch (error) {
-    console.error(error);
+    console.error("Upload route error:", error);
     return NextResponse.json(
-      { error: "Error uploading file" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
