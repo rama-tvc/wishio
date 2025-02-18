@@ -20,6 +20,20 @@ export async function forgotPassword(email: string) {
   // Create password reset token
   const resetToken = crypto.randomBytes(32).toString("hex");
 
+  const requiredEnvVars = [
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASSWORD",
+    "SMTP_FROM",
+  ];
+  for (const envVar of requiredEnvVars) {
+    if (!process.env[envVar]) {
+      throw new Error(
+        `Отсутствует обязательная переменная окружения: ${envVar}`
+      );
+    }
+  }
   // Save token in database
   await prisma.passwordResetToken.create({
     data: {

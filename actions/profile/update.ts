@@ -39,7 +39,7 @@ export async function updateProfile(data: {
     throw new Error("Invalid input");
   }
 
-  let birthdateObj = undefined;
+  let birthdateObj = null;
   if (parsed.data.birthdate) {
     birthdateObj = new Date(parsed.data.birthdate);
     if (isNaN(birthdateObj.getTime())) {
@@ -51,7 +51,7 @@ export async function updateProfile(data: {
 
   // Handle file upload if a file is provided
   if (data.file) {
-    const bucketName = process.env.MINIO_BUCKET || "wishio";
+    const bucketName = process.env.MINIO_BUCKET!;
 
     // Ensure bucket exists and is public
     await ensurePublicBucket(bucketName);

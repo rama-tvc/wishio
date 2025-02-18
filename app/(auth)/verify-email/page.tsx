@@ -37,6 +37,7 @@ export default function VerifyEmail() {
           setMessage(response.toString || "Verification failed");
         }
       } catch (error) {
+        console.log(error);
         setStatus("error");
         setMessage("An error occurred during verification");
       }

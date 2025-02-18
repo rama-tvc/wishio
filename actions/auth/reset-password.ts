@@ -1,42 +1,5 @@
 "use server";
 
-/**
- * @swagger
- * /api/auth/reset-password:
- *   post:
- *     summary: Reset user password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *               - newPassword
- *             properties:
- *               token:
- *                 type: string
- *               newPassword:
- *                 type: string
- *                 format: password
- *     responses:
- *       200:
- *         description: Password reset successful
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *       400:
- *         description: Invalid or expired token
- *       500:
- *         description: Internal server error
- */
-
 import prisma from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { z } from "zod";
@@ -61,6 +24,21 @@ export async function resetPassword(token: string, newPassword: string) {
 
     if (!resetToken) {
       throw new Error("Invalid reset token");
+    }
+
+    const requiredEnvVars = [
+      "SMTP_HOST",
+      "SMTP_PORT",
+      "SMTP_USER",
+      "SMTP_PASSWORD",
+      "SMTP_FROM",
+    ];
+    for (const envVar of requiredEnvVars) {
+      if (!process.env[envVar]) {
+        throw new Error(
+          `Отсутствует обязательная переменная окружения: ${envVar}`
+        );
+      }
     }
 
     // Check if token has expired

@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
 import { v4 as uuidv4 } from "uuid";
-import { revalidatePath } from "next/cache";
 
 export async function getWishlists() {
   const session = await getServerSession(authOptions);
@@ -56,7 +55,6 @@ export async function createWishlist(data: {
     },
   });
 
-  revalidatePath("/wishlists");
   return wishList;
 }
 
@@ -130,8 +128,6 @@ export async function updateWishlist(
     },
   });
 
-  revalidatePath("/wishlists");
-  revalidatePath(`/wishlists/${id}`);
   return updatedWishList;
 }
 
@@ -160,8 +156,6 @@ export async function deleteWishlist(id: string) {
   await prisma.wishList.delete({
     where: { id },
   });
-
-  revalidatePath("/wishlists");
 }
 
 export async function getWishlistByToken(token: string) {

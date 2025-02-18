@@ -3,7 +3,6 @@
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { minioClient, ensurePublicBucket } from "@/lib/minio";
 
@@ -139,7 +138,6 @@ export async function updateWish(
     },
   });
 
-  revalidatePath("/wishlists");
   return updatedWish;
 }
 
@@ -192,7 +190,6 @@ export async function reserveWish(id: string) {
     },
   });
 
-  revalidatePath("/wishlists");
   return updatedWish;
 }
 
@@ -226,7 +223,6 @@ export async function unreserveWish(id: string) {
     },
   });
 
-  revalidatePath("/wishlists");
   return updatedWish;
 }
 
@@ -329,7 +325,5 @@ export async function addWishToWishlist(
     },
   });
 
-  revalidatePath("/wishlists");
-  revalidatePath(`/wishlists/${wishlistId}`);
   return gift;
 }

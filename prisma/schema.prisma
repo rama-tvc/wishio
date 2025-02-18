@@ -79,6 +79,9 @@ model Gift {
     reserver    User?          @relation("ReservedGifts", fields: [reservedBy], references: [id])
     userId      String?
     user        User?          @relation("UserGifts", fields: [userId], references: [id])
+
+    @@index([userId])
+    @@index([reservedBy])
 }
 
 model WishListGift {

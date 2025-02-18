@@ -31,15 +31,16 @@ export async function verifyEmailAction(token: string) {
     }
 
     // Create user
-    await prisma.user.create({
-      data: {
-        email: verificationData.email,
-        password: verificationData.hashedPassword,
-      },
-    });
+    await prisma.$transaction(async (tx) => {
+      await tx.user.create({
+        data: {
+          email: verificationData.email,
+          password: verificationData.hashedPassword,
+        },
+      });
 
-    // Delete used token
-    await prisma.verificationToken.delete({ where: { token } });
+      await tx.verificationToken.delete({ where: { token } });
+    });
 
     return { success: true };
   } catch (error) {
