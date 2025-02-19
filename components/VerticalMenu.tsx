@@ -1,7 +1,9 @@
+"use client";
+
 import { toast } from "@/hooks/use-toast";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import EditWishlist from "./EditWishlist";
+import { useChange } from "@/hooks/useIsChange";
 
 interface MenuItemType {
   id: number;
@@ -12,7 +14,6 @@ interface MenuItemType {
 export default function VerticalMenu({
   title,
   deadline,
-  onAction,
   wishlistId,
 }: {
   title: string;
@@ -20,7 +21,6 @@ export default function VerticalMenu({
   onAction: (id: number) => void;
   wishlistId: string;
 }) {
-  const { update: updateSession } = useSession();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [menuPosition, setMenuPosition] = useState<{
     top: number;
@@ -28,6 +28,7 @@ export default function VerticalMenu({
   } | null>(null);
 
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const { isChangeFetch, setIsChangeFetch } = useChange();
 
   const handleSendToArchive = async (wishlistId: string) => {
     console.log("Send to archive:", wishlistId);
@@ -52,7 +53,7 @@ export default function VerticalMenu({
         title: "Отправлено в архив",
         description: "Список успешно отправлен в архив",
       });
-      await updateSession();
+      await setIsChangeFetch(!isChangeFetch);
     } catch (e) {
       console.error("Ошибка при отправке в архив:", e);
       toast({ title: "Ошибка", description: "Попробуйте еще раз" });
@@ -93,7 +94,7 @@ export default function VerticalMenu({
         title: "Удалено",
         description: "Список успешно удален",
       });
-      await updateSession();
+      await setIsChangeFetch(!isChangeFetch);
     } catch (e) {
       console.error("Ошибка при удалении:", e);
       toast({ title: "Ошибка", description: "Попробуйте еще раз" });

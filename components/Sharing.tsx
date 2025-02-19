@@ -1,7 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -18,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Share2 } from "lucide-react";
 
 export default function SharedLink() {
-  const { data: session } = useSession();
   const [title, setTitle] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [shareToken, setShareToken] = useState("");
@@ -26,11 +24,14 @@ export default function SharedLink() {
   const wishlistId = Array.isArray(params?.id)
     ? params.id[0]
     : params?.id || "";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "";
 
   useEffect(() => {
     const fetchShareToken = async () => {
       try {
-        const response = await fetch(`/api/wishlists/${wishlistId}`);
+        const response = await fetch(
+          `${API_BASE_URL}/api/wishlists/${wishlistId}`
+        );
         if (!response.ok) {
           throw new Error("Ошибка загрузки списка желаемого");
         }
@@ -38,8 +39,7 @@ export default function SharedLink() {
         const data = await response.json();
         console.log("Данные с сервера:", data);
 
-        const targetObject = data.shareToken;
-        setShareToken(targetObject);
+        setShareToken(data.shareToken);
       } catch (error) {
         console.error("Ошибка при загрузке:", error);
         toast({
@@ -50,15 +50,14 @@ export default function SharedLink() {
     };
 
     console.log("shareToken перед вызовом fetch:", shareToken);
-
     if (!shareToken) {
       fetchShareToken();
     }
-  }, [session, wishlistId, shareToken]);
+  }, [shareToken, wishlistId, API_BASE_URL]);
 
   useEffect(() => {
-    setTitle(`http://localhost:3000/sharePage/${shareToken}`);
-  }, [shareToken]);
+    setTitle(`${API_BASE_URL}/sharePage/${shareToken}`);
+  }, [shareToken, API_BASE_URL]);
 
   const handleCopy = (e: React.FormEvent) => {
     e.preventDefault();

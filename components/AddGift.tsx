@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, use } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,23 +12,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
 import { Gift } from "lucide-react"; // Добавляем иконку
 import { useParams } from "next/navigation";
+import { useChange } from "@/hooks/useIsChange";
 
 export default function AddWishlistItem() {
-  const { update: updateSession } = useSession();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
   const [link, setLink] = useState("");
-  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isChangeFetch, setIsChangeFetch } = useChange();
 
   const params = useParams();
   const wishlistId = params?.id || "";
@@ -45,8 +44,8 @@ export default function AddWishlistItem() {
       setDescription("");
       setPrice(0);
       setLink("");
-      setImage("");
       setPreviewUrl("");
+      setSelectedFile(null);
     }
   }, [dialogOpen]);
 
@@ -112,7 +111,7 @@ export default function AddWishlistItem() {
         title: "Список создан",
         description: "Ваш список успешно создан",
       });
-      await updateSession();
+      await setIsChangeFetch(!isChangeFetch);
       setDialogOpen(false);
     } catch (e) {
       console.error("Ошибка при создании списка:", e);
@@ -141,7 +140,6 @@ export default function AddWishlistItem() {
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            {/* Название */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Название*
@@ -155,8 +153,6 @@ export default function AddWishlistItem() {
                 required
               />
             </div>
-
-            {/* Описание */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
                 Описание
@@ -170,7 +166,6 @@ export default function AddWishlistItem() {
               />
             </div>
 
-            {/* Цена */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="price" className="text-right">
                 Цена
@@ -188,7 +183,6 @@ export default function AddWishlistItem() {
               </div>
             </div>
 
-            {/* Ссылка */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="link" className="text-right">
                 Ссылка
@@ -203,7 +197,6 @@ export default function AddWishlistItem() {
               />
             </div>
 
-            {/* Загрузка изображения */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="image" className="text-right">
                 Изображение

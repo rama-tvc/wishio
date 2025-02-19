@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import { Toaster } from "./ui/toaster";
 import { usePathname } from "next/navigation";
+import { IsChangeFetchProvider } from "@/hooks/useIsChange";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="relative">{pathname !== "/api-docs" && <Header />}</div>
 
         <div className="relative flex-grow min-h-full max-h-[calc(100vh-80px)] overflow-auto">
-          {children}
+          <IsChangeFetchProvider>{children}</IsChangeFetchProvider>
         </div>
 
         <div className="relative bottom-0 w-full">

@@ -1,8 +1,6 @@
 import "./globals.css";
 import { Layout } from "@/components/Layout";
 
-import { FilterProvider } from "@/hooks/useFilter";
-
 export default function RootLayout({
   children,
 }: {
@@ -18,9 +16,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <FilterProvider>
-          <Layout>{children}</Layout>
-        </FilterProvider>
+        <Layout>{children}</Layout>
       </body>
     </html>
   );

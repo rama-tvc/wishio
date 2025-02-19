@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "../components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { useSession } from "next-auth/react";
+import { useChange } from "@/hooks/useIsChange";
 
 interface EditWishlistProps {
   open: boolean;
@@ -31,11 +31,10 @@ export default function EditWishlist({
   initialTitle,
   initialDeadline,
 }: EditWishlistProps) {
-  const { update: updateSession } = useSession();
   const [title, setTitle] = useState(initialTitle);
   const [deadline, setDeadline] = useState(initialDeadline);
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { isChangeFetch, setIsChangeFetch } = useChange();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,12 +65,11 @@ export default function EditWishlist({
         title: "Отредактировано",
         description: "Список успешно отредактирован",
       });
-      await updateSession();
+      await setIsChangeFetch(!isChangeFetch);
     } catch (e) {
       console.error("Ошибка при редактировании:", e);
       toast({ title: "Ошибка", description: "Попробуйте еще раз" });
     } finally {
-      setLoading(false);
     }
     onOpenChange(false);
   };

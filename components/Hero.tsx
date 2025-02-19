@@ -24,7 +24,14 @@ export default function Hero() {
             alt="Wishio illustration"
             width={600}
             height={350}
-            className="rounded-lg shadow-lg min-w-[600px] max-h-[350px] w-full object-cover"
+            className="hidden md:block md:rounded-lg md:shadow-lg md:min-w-[600px] md:max-h-[350px] md:w-full md:object-cover"
+          />
+          <Image
+            src="/Reserved.jpg"
+            alt="wishio illutration mobile"
+            width={320}
+            height={560}
+            className="rounded-lg shadow-lg md:hidden"
           />
         </div>
       </div>

@@ -14,11 +14,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useSession } from "next-auth/react";
 import { toast } from "@/hooks/use-toast";
+import { useChange } from "@/hooks/useIsChange";
 
 export default function CreateWishlist() {
-  const { update: updateSession } = useSession();
+  const { isChangeFetch, setIsChangeFetch } = useChange();
   const [title, setTitle] = useState("");
   const [deadline, setDeadline] = useState("");
   const [description, setDescription] = useState("");
@@ -57,7 +57,7 @@ export default function CreateWishlist() {
         const error = await response.json();
         throw new Error(error.error || "Ошибка при создании");
       }
-      await updateSession();
+      await setIsChangeFetch(!isChangeFetch);
       toast({
         title: "Список создан",
         description: "Ваш список успешно создан",
