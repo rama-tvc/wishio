@@ -1,0 +1,41 @@
+name: Auto Deploy on changes in main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  auto-commit:
+    if: github.actor != 'bonkboykz'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.DEPLOY_PAT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "poxerface5@gmail.com"
+          git config --local user.name "bonkboykz"
+
+      - name: Make changes
+        run: |
+          echo "Last deployed: $(date)" >> deploy.log
+
+      - name: Commit and push if changes exist
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "Auto-deploy after changes in main branch"
+            git push
+          fi
