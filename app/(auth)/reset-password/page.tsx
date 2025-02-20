@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { resetPassword } from "@/actions/auth/reset-password";
 
 export default function ResetPassword() {
   const searchParams = useSearchParams();
@@ -32,15 +33,9 @@ export default function ResetPassword() {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, newPassword }),
-      });
+      const response = await resetPassword(token, newPassword);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.success) {
         setStatus("success");
         setMessage("Password reset successful! Redirecting to login...");
         setTimeout(() => {
@@ -48,7 +43,7 @@ export default function ResetPassword() {
         }, 2000);
       } else {
         setStatus("error");
-        setMessage(data.message || "Something went wrong");
+        setMessage(response.toString || "Something went wrong");
       }
     } catch (e) {
       setStatus("error");

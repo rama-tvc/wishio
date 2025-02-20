@@ -1,5 +1,6 @@
 "use client";
 
+import { forgotPassword } from "@/actions/auth/forgot-password";
 import { useState } from "react";
 
 export default function ForgotPassword() {
@@ -14,20 +15,14 @@ export default function ForgotPassword() {
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await forgotPassword(email);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.success) {
         setStatus("success");
         setMessage("Check your email for password reset instructions");
       } else {
         setStatus("error");
-        setMessage(data.message || "Something went wrong");
+        setMessage(response.toString || "Something went wrong");
       }
     } catch (error) {
       console.error(error);

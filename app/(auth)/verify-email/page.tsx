@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { verifyEmailAction } from "@/actions/auth/verify";
 
 export default function VerifyEmail() {
   const searchParams = useSearchParams();
@@ -22,15 +23,9 @@ export default function VerifyEmail() {
       }
 
       try {
-        const response = await fetch("/api/auth/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token }),
-        });
+        const response = await verifyEmailAction(token);
 
-        const data = await response.json();
-
-        if (response.ok) {
+        if (response.success) {
           setStatus("success");
           setMessage("Email verified successfully! Redirecting to login...");
           // Перенаправляем на страницу входа через 3 секунды
@@ -39,9 +34,10 @@ export default function VerifyEmail() {
           }, 3000);
         } else {
           setStatus("error");
-          setMessage(data.message || "Verification failed");
+          setMessage(response.toString || "Verification failed");
         }
-      } catch (e) {
+      } catch (error) {
+        console.log(error);
         setStatus("error");
         setMessage("An error occurred during verification");
         console.error(e);
