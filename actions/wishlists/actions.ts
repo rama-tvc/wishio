@@ -65,14 +65,11 @@ export async function getWishlistById(id: string) {
     throw new Error("Unauthorized");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
+
 
   const wishList = await prisma.wishList.findFirst({
     where: {
       id,
-      userId: user!.id,
     },
     include: {
       gifts: {
@@ -89,6 +86,7 @@ export async function getWishlistById(id: string) {
 
   return wishList;
 }
+
 
 export async function updateWishlist(
   id: string,
@@ -125,10 +123,45 @@ export async function updateWishlist(
       title: data.title,
       description: data.description,
       deadline: data.deadline ? new Date(data.deadline) : undefined,
+      status: "ACTIVE"
     },
   });
 
   return updatedWishList;
+}
+
+export async function archiveWishlist(
+  id: string,
+) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    throw new Error("Unauthorized");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  const wishList = await prisma.wishList.findFirst({
+    where: {
+      id,
+      userId: user!.id,
+    },
+  });
+
+  if (!wishList) {
+    throw new Error("Wishlist not found");
+  }
+
+  const archiveWishList = await prisma.wishList.update({
+    where: { id },
+    data: {
+      status: "ARCHIVED"
+    },
+  });
+
+  return archiveWishList;
 }
 
 export async function deleteWishlist(id: string) {

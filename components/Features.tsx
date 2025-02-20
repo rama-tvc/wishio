@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -38,13 +39,15 @@ export default function Features() {
               key={index}
               className="transition-transform duration-300 ease-in-out hover:shadow-lg hover:scale-105"
             >
-              <CardHeader>
-                <feature.icon className="w-12 h-12 text-primary mb-4" />
-                <CardTitle>{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardContent>
+              <Link href="/register">
+                <CardHeader>
+                  <feature.icon className="w-12 h-12 text-primary mb-4" />
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardContent>
+              </Link>
             </Card>
           ))}
         </div>

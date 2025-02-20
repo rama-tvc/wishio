@@ -13,41 +13,33 @@ import {
 
 import { toast } from "@/hooks/use-toast";
 import { useChange } from "@/hooks/useIsChange";
+import { getReservedWishes } from "@/actions/gifts/actions";
 
 interface User {
+  id: string;
   email: string;
-  name: string;
+  name?: string;
 }
 
-interface WishlistOfUser {
+interface WishList {
   id: string;
+  name: string;
   user: User;
 }
-interface WishlistsOfUser {
-  id: string;
-  wishList: WishlistOfUser;
-}
-interface Wish {
-  id: string;
-  title: string;
-  description: string;
-  price?: number;
-  link?: string;
-  status: "RESERVED" | "UNRESERVED";
-  image?: string;
-  reservedBy?: string;
-  wishLists?: WishlistsOfUser[];
+
+interface WishListRelation {
+  wishList: WishList;
 }
 
-interface Wishlist {
+interface Gift {
   id: string;
-  title: string;
-  description: string;
-  wishes?: Wish[];
+  name: string;
+  reservedBy: string;
+  wishLists: WishListRelation[];
 }
 
 export default function MyReservePage() {
-  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
+  const [wishlist, setWishlist] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
   const [unReservedMap, setUnReservedMap] = useState<{
     [key: string]: boolean;
@@ -61,15 +53,13 @@ export default function MyReservePage() {
       setLoading(true);
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/wishes/reserved`);
-        if (!response.ok) {
-          throw new Error("Ошибка загрузки списка желаемого");
-        }
+        const response = await getReservedWishes();
+        console.log("response", response);
+        const correctedData: WishListRelation[] = response.flatMap((item) =>
+          item.wishLists.map((w) => w.wishList)
+        );
 
-        const data: Wish[] = await response.json();
-        console.log(data);
-
-        if (!Array.isArray(data) || data.length === 0) {
+        if (!Array.isArray(response) || response.length === 0) {
           console.log(
             `Попытка ${attempt}: данные не получены, повторный запрос...`
           );
@@ -86,10 +76,7 @@ export default function MyReservePage() {
           }
         } else {
           setWishlist({
-            id: "reserved-wishlist",
-            title: "Мои зарезервированные желания",
-            description: "Список желаемого, которое я зарезервировал",
-            wishes: data,
+            wishLists: response,
           });
           console.log(wishlist);
         }
@@ -119,7 +106,9 @@ export default function MyReservePage() {
 
   if (!wishlist) {
     return (
-      <p className="text-center text-red-500">Список желаемого не найден</p>
+      <p className="text-center text-red-500">
+        Список зарезервированных подарков отсутствует
+      </p>
     );
   }
 
@@ -182,11 +171,13 @@ export default function MyReservePage() {
       });
 
       setWishlist((prev) => {
-        if (!prev || !prev.wishes) return prev;
+        if (!prev || !prev.wishLists) return prev;
         return {
           ...prev,
-          wishes: prev.wishes.map((wish) =>
-            wish.id === wishId ? { ...wish, status: "UNRESERVED" } : wish
+          wishes: prev.wishLists.map((wishRelation) =>
+            wishRelation.wishList.id === wishId
+              ? { ...wishRelation.wishList, status: "UNRESERVED" }
+              : wishRelation.wishList
           ),
         };
       });
@@ -211,10 +202,10 @@ export default function MyReservePage() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              {wishlist?.title || "Зарезервированные желания"}
+              Мои зарезервированные желания
             </h1>
             <p className="text-gray-600">
-              {wishlist?.description || "Ваши зарезервированные подарки"}
+              Список желаемого, которое я зарезервировал
             </p>
           </div>
           <div className="flex items-center space-x-4"></div>

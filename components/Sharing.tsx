@@ -1,5 +1,4 @@
 "use client";
-import { useParams } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import {
@@ -16,48 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Share2 } from "lucide-react";
 
-export default function SharedLink() {
+export default function SharedLink({ getToken }: { getToken: string }) {
   const [title, setTitle] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [shareToken, setShareToken] = useState("");
-  const params = useParams();
-  const wishlistId = Array.isArray(params?.id)
-    ? params.id[0]
-    : params?.id || "";
   const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "";
 
   useEffect(() => {
-    const fetchShareToken = async () => {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/wishlists/${wishlistId}`
-        );
-        if (!response.ok) {
-          throw new Error("Ошибка загрузки списка желаемого");
-        }
-
-        const data = await response.json();
-        console.log("Данные с сервера:", data);
-
-        setShareToken(data.shareToken);
-      } catch (error) {
-        console.error("Ошибка при загрузке:", error);
-        toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить список желаемого",
-        });
-      }
-    };
-
-    console.log("shareToken перед вызовом fetch:", shareToken);
-    if (!shareToken) {
-      fetchShareToken();
-    }
-  }, [shareToken, wishlistId, API_BASE_URL]);
-
-  useEffect(() => {
-    setTitle(`${API_BASE_URL}/sharePage/${shareToken}`);
-  }, [shareToken, API_BASE_URL]);
+    setTitle(`${API_BASE_URL}/sharePage/${getToken}`);
+  }, [getToken, API_BASE_URL]);
 
   const handleCopy = (e: React.FormEvent) => {
     e.preventDefault();

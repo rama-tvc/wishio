@@ -38,7 +38,6 @@ export default function Footer() {
           <div className="w-full md:w-1/4 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <p>Email: support@wishio.com</p>
-            <p>Телефон: +7 (999) 123-45-67</p>
           </div>
           <div className="w-full md:w-1/4">
             <h3 className="text-lg font-semibold mb-4">
@@ -62,7 +61,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 text-center">
-          <p>&copy; 2023 Wishio. Все права защищены.</p>
+          <p>&copy; 2025 Wishio. Все права защищены.</p>
         </div>
       </div>
     </footer>

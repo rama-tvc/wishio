@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "../components/ui/button";
 import Image from "next/image";
 
@@ -15,7 +16,8 @@ export default function Hero() {
             случая. Делайте подарки, которые действительно нужны!
           </p>
           <Button size="lg" className="gradient-bg text-white">
-            Начать бесплатно
+            {" "}
+            <Link href="/register">Начать бесплатно</Link>
           </Button>
         </div>
         <div className="md:w-1/3">

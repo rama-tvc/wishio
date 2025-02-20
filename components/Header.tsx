@@ -7,6 +7,7 @@ import { Button } from "../components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { MobileMenu } from "./MobileMenu";
 import { useEffect, useState } from "react";
+import { getProfile } from "@/actions/profile/get";
 
 export default function Header() {
   const { data: session, update: updateSession } = useSession();
@@ -17,14 +18,11 @@ export default function Header() {
   });
   const fetchProfile = async () => {
     try {
-      const response = await fetch("/api/profile");
-      if (!response.ok) {
-        throw new Error("Failed to fetch profile");
-      }
-      const data = await response.json();
+      const response = await getProfile();
+
       setProfile({
-        name: data.user.name || "",
-        image: data.user.image || "/placeholder.png",
+        name: response.name || "",
+        image: response.image || "/placeholder.png",
       });
     } catch (error) {
       console.error("Ошибка загрузки профиля:", error);

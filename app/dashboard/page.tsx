@@ -21,12 +21,12 @@ import Filters from "@/components/ui/filter";
 import { useFilter } from "@/hooks/useFilter";
 import VerticalMenu from "@/components/VerticalMenu";
 import { useChange } from "@/hooks/useIsChange";
-import { GET } from "../api/wishlists/route";
-import { NextResponse, NextRequest } from "next/server";
+import { getWishlists } from "@/actions/wishlists/actions";
 
-interface WishlistItem {
+export interface WishlistItem {
   id: string;
   title: string;
+  description: string;
   date: string;
   itemCount: number;
   status: "active" | "archived";
@@ -37,30 +37,28 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const [wishlists, setWishlists] = useState<WishlistItem[]>([]);
   const { isChangeFetch } = useChange();
+  const [isHovered, setIsHovered] = useState("");
 
   useEffect(() => {
     const fetchWishlists = async () => {
       try {
-        const response = await fetch("/api/wishlists");
+        const response = await getWishlists();
 
         console.log(response);
-        if (!response.ok) {
-          throw new Error("Failed to fetch wishlists");
-        }
 
-        const data = await response.json();
-
-        if (Array.isArray(data)) {
-          const formattedWishlists = data.map((wishlist) => ({
+        if (Array.isArray(response)) {
+          const formattedWishlists = response.map((wishlist) => ({
             id: wishlist.id,
             title: wishlist.title,
+            description: wishlist.description,
             date: new Date(wishlist.deadline).toISOString().split("T")[0],
-            itemCount: wishlist.wishes.length || 0,
+            itemCount: wishlist.gifts.length || 0,
             status: wishlist.status.toLowerCase() as "active" | "archived",
             lastModified: new Date(wishlist.updatedAt).toLocaleString(),
           }));
 
           setWishlists(formattedWishlists);
+          console.log("wishlists", wishlists);
         } else {
           throw new Error("Invalid data format");
         }
@@ -101,21 +99,65 @@ export default function Dashboard() {
   const { isOpen } = useFilter();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="relative flex flex-col md:flex-row h-screen">
       {/* Sidebar (компонент Filters остаётся без изменений) */}
       <div
-        className={`hidden transition-transform duration-300 ease-in-out ${
-          isOpen ? "-translate-x-180" : "-translate-x-full"
-        }
-        w-64 = "true"
-         border-r = "true"
-        bg-white = "true"
-        p-6 = "true" md:block`}
+        className={`absolute md:relative transition-transform duration-300 ease-in-out 
+        ${isOpen ? "translate-x-0 bg-white" : "-translate-x-full"} 
+        w-64 border-r p-6 md:block`}
       >
         <Filters
           data={wishlists}
           onSort={(sortedData) => setWishlists(sortedData)}
         />
+      </div>
+      <div
+        className={`md:block hidden absolute top-0 left-0 w-64 h-full bg-gray-50 border-r p-4 transition-transform duration-300 ease-in-out 
+      ${isOpen ? "-translate-x-full" : "translate-x-0"}`}
+      >
+        <div className="text-center font-semibold text-lg text-gray-900 mb-4 py-4">
+          Создайте свой список желаний <br /> и поделитесь с друзьями
+        </div>
+
+        <div className="border-t border-gray-300 my-3" />
+
+        <div className="text-sm text-gray-600 leading-relaxed text-center">
+          Не знаете, что выбрать? Подберите в маркетплейсах и отправьте нам
+          ссылку. Мы покажем вашим друзьям.
+        </div>
+
+        <div className="border-t border-gray-300 my-3" />
+
+        <div className="flex flex-col gap-2 text-center">
+          <Link
+            href="https://kaspi.kz/shop/"
+            target="_blank"
+            className="text-red-600 hover:text-red-800 font-semibold transition"
+          >
+            Kaspi
+          </Link>
+          <Link
+            href="https://www.wildberries.ru/"
+            target="_blank"
+            className="text-purple-600 hover:text-purple-800 font-semibold transition"
+          >
+            WildBerries
+          </Link>
+          <Link
+            href="https://halykmarket.kz/"
+            target="_blank"
+            className="text-green-600 hover:text-green-800 font-semibold transition"
+          >
+            Halyk Market
+          </Link>
+        </div>
+        <div className="border-t border-gray-300 my-3" />
+        <Link
+          href="/"
+          className="block text-gray-400 hover:text-blue-500 hover:underline font-medium text-center py-3 shadow-sm"
+        >
+          На главную
+        </Link>
       </div>
 
       {/* Основной контент */}
@@ -173,11 +215,18 @@ export default function Dashboard() {
                         <TableCell>
                           <Checkbox />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="relative">
                           <Link
                             href={`/wishlist/${wishlist.id}`}
                             className="font-medium hover:underline"
+                            onMouseEnter={() => setIsHovered(wishlist.id)}
+                            onMouseLeave={() => setIsHovered("")}
                           >
+                            {isHovered === wishlist.id && (
+                              <div className="absolute left-1/2 -translate-x-1/2 mt-6 min-w-48 max-w-full  text-black text-sm rounded-lg shadow-md p-2 transition-opacity duration-300 z-10 truncate">
+                                {wishlist.description}
+                              </div>
+                            )}
                             {wishlist.title}
                           </Link>
                         </TableCell>

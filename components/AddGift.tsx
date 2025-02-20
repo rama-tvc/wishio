@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { Gift } from "lucide-react"; // Добавляем иконку
 import { useParams } from "next/navigation";
 import { useChange } from "@/hooks/useIsChange";
+import { addWishToWishlist } from "@/actions/gifts/actions";
 
 export default function AddWishlistItem() {
   const [title, setTitle] = useState("");
@@ -30,7 +31,9 @@ export default function AddWishlistItem() {
   const { isChangeFetch, setIsChangeFetch } = useChange();
 
   const params = useParams();
-  const wishlistId = params?.id || "";
+  const wishlistId = Array.isArray(params?.id)
+    ? params.id[0]
+    : params?.id || "";
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -80,37 +83,24 @@ export default function AddWishlistItem() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    let formattedLink = link;
-    if (formattedLink.startsWith("https://")) {
-      formattedLink = formattedLink.slice(8);
-    } else if (formattedLink.startsWith("http://")) {
-      formattedLink = formattedLink.slice(7);
-    }
 
     try {
-      const formData = new FormData();
-
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("price", price.toString());
-      formData.append("link", formattedLink);
-      if (selectedFile) {
-        formData.append("image", selectedFile);
-      }
-      const response = await fetch(`/api/wishlists/${wishlistId}/wishes`, {
-        method: "POST",
-        body: formData,
+      const response = await addWishToWishlist(wishlistId, {
+        title: title,
+        description: description,
+        price: price,
+        link: link ?? "",
+        image: previewUrl,
+        file: selectedFile ?? undefined,
       });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка при создании");
-      }
 
       toast({
         title: "Список создан",
-        description: "Ваш список успешно создан",
+        description: "Ваш подарок успешно добавлен",
       });
+      console.log("link", link);
+      console.log("typeoflink", typeof link);
+      console.log("addwishlist", response);
       await setIsChangeFetch(!isChangeFetch);
       setDialogOpen(false);
     } catch (e) {
@@ -145,7 +135,7 @@ export default function AddWishlistItem() {
                 Название*
               </Label>
               <Input
-                id="name"
+                id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="col-span-3"
@@ -189,8 +179,7 @@ export default function AddWishlistItem() {
               </Label>
               <Input
                 id="link"
-                type="text"
-                value={link}
+                value={link || ""}
                 onChange={(e) => setLink(e.target.value)}
                 className="col-span-3"
                 placeholder="Вставьте ссылку с marketplace"

@@ -15,6 +15,7 @@ import {
 } from "../components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { useChange } from "@/hooks/useIsChange";
+import { updateWishlist } from "@/actions/wishlists/actions";
 
 interface EditWishlistProps {
   open: boolean;
@@ -45,25 +46,10 @@ export default function EditWishlist({
       description,
     });
     try {
-      const response = await fetch(`/api/wishlists/${wishlistId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          description: "description",
-          deadline: deadline,
-          status: "ACTIVE",
-        }),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка при редактировании");
-      }
-      toast({
-        title: "Отредактировано",
-        description: "Список успешно отредактирован",
+      const response = await updateWishlist(wishlistId, {
+        title: title,
+        description: description,
+        deadline: new Date(deadline),
       });
       await setIsChangeFetch(!isChangeFetch);
     } catch (e) {

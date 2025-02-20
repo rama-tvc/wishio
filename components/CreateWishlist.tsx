@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { useChange } from "@/hooks/useIsChange";
+import { createWishlist } from "@/actions/wishlists/actions";
 
 export default function CreateWishlist() {
   const { isChangeFetch, setIsChangeFetch } = useChange();
@@ -42,21 +43,12 @@ export default function CreateWishlist() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/wishlists", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          deadline,
-          description,
-        }),
+      const response = await createWishlist({
+        title: title,
+        description: description,
+        deadline: new Date(deadline),
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка при создании");
-      }
+
       await setIsChangeFetch(!isChangeFetch);
       toast({
         title: "Список создан",
@@ -99,7 +91,7 @@ export default function CreateWishlist() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="col-span-3"
-                placeholder="Например: День рождения 2024"
+                placeholder="Например: День рождения 2025"
                 required
               />
             </div>

@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import EditWishlist from "./EditWishlist";
 import { useChange } from "@/hooks/useIsChange";
+import { archiveWishlist, deleteWishlist } from "@/actions/wishlists/actions";
 
 interface MenuItemType {
   id: number;
@@ -33,22 +34,8 @@ export default function VerticalMenu({
   const handleSendToArchive = async (wishlistId: string) => {
     console.log("Send to archive:", wishlistId);
     try {
-      const response = await fetch(`/api/wishlists/${wishlistId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title,
-          description: "description",
-          deadline: deadline,
-          status: "ARCHIVED",
-        }),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка при отправке в архив");
-      }
+      const response = await archiveWishlist(wishlistId);
+
       toast({
         title: "Отправлено в архив",
         description: "Список успешно отправлен в архив",
@@ -57,10 +44,9 @@ export default function VerticalMenu({
     } catch (e) {
       console.error("Ошибка при отправке в архив:", e);
       toast({ title: "Ошибка", description: "Попробуйте еще раз" });
-    } finally {
-      console.log("handlesendtoarchive завершен");
     }
   };
+
   const handleEdit = (wishlistId: string) => {
     console.log("Редактируем:", wishlistId);
     setEditOpen(true);
@@ -83,17 +69,7 @@ export default function VerticalMenu({
   const handleDelete = async (wishlistId: string) => {
     console.log("Удаляем:", wishlistId);
     try {
-      const response = await fetch(`/api/wishlists/${wishlistId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка при удалении");
-      }
-      toast({
-        title: "Удалено",
-        description: "Список успешно удален",
-      });
+      const response = await deleteWishlist(wishlistId);
       await setIsChangeFetch(!isChangeFetch);
     } catch (e) {
       console.error("Ошибка при удалении:", e);
