@@ -64,8 +64,6 @@ export default function CreateWishlist() {
     } finally {
       setLoading(false);
     }
-    // Здесь будет логика создания списка желаний
-    console.log("Create wishlist:", title, deadline, description);
   };
 
   return (

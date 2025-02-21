@@ -39,12 +39,7 @@ export default function EditWishlist({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Сохраняем изменения:", {
-      wishlistId,
-      title,
-      deadline,
-      description,
-    });
+
     try {
       await updateWishlist(wishlistId, {
         title: title,

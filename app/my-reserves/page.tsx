@@ -56,13 +56,8 @@ export default function MyReservePage() {
 
       try {
         const response = await getReservedWishes();
-        console.log("response", response);
 
         if (!Array.isArray(response) || response.length === 0) {
-          console.log(
-            `Попытка ${attempt}: данные не получены, повторный запрос...`
-          );
-
           if (attempt < maxAttempts) {
             setTimeout(() => fetchWishlist(attempt + 1, maxAttempts), 2000);
           } else {
@@ -113,10 +108,6 @@ export default function MyReservePage() {
       fetchWishlist();
     }
   }, [session]);
-
-  useEffect(() => {
-    console.log("wishlist", wishlist);
-  }, [wishlist]);
 
   if (loading) {
     return <p className="text-center text-gray-500">Загрузка...</p>;

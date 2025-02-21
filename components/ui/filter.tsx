@@ -3,6 +3,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useFilter } from "@/hooks/useFilter";
 import { WishlistItem } from "@/app/dashboard/page";
 import { useChange } from "@/hooks/useIsChange";
+import { cn } from "@/lib/utils";
 
 interface FiltersProps {
   data: WishlistItem[];
@@ -19,7 +20,6 @@ const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
   const handleSortChange = (option: "byDate" | "byName") => {
     const updateOptions = { ...sortOptions, [option]: !sortOptions[option] };
 
-    // Убедимся, что только один чекбокс может быть активен
     if (option === "byDate" && updateOptions.byDate) {
       updateOptions.byName = false;
     }
@@ -29,7 +29,6 @@ const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
 
     setSortOptions(updateOptions);
 
-    // Выполняем сортировку
     const sortedData = [...data];
     if (updateOptions.byDate) {
       sortedData.sort(
@@ -49,13 +48,10 @@ const Filters: React.FC<FiltersProps> = ({ data, onSort }) => {
 
   return (
     <div
-      className={`transition-transform duration-300 ease-in-out ${
+      className={cn(
+        "w-64 border-r bg-white p-6 transition-transform duration-300 ease-in-out",
         isOpen ? "-translate-x-180" : "-translate-x-full"
-      }`}
-      w-64="true"
-      border-r="true"
-      bg-white="true"
-      p-6="true"
+      )}
     >
       <div className="font-semibold mb-4">Фильтры</div>
       <div className="space-y-4">

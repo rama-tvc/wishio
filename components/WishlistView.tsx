@@ -32,10 +32,7 @@ export default function WishlistView({
   date,
   gifts,
 }: WishlistViewProps) {
-  const handleShare = () => {
-    // Здесь будет логика для создания ссылки для обмена
-    console.log("Share wishlist");
-  };
+  const handleShare = () => {};
 
   return (
     <Card className="w-full max-w-4xl mx-auto">

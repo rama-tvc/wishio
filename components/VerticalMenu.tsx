@@ -32,7 +32,6 @@ export default function VerticalMenu({
   const { isChangeFetch, setIsChangeFetch } = useChange();
 
   const handleSendToArchive = async (wishlistId: string) => {
-    console.log("Send to archive:", wishlistId);
     try {
       await archiveWishlist(wishlistId);
 
@@ -48,9 +47,8 @@ export default function VerticalMenu({
   };
 
   const handleEdit = (wishlistId: string) => {
-    console.log("Редактируем:", wishlistId);
     setEditOpen(true);
-    console.log(editOpen);
+
     handleClose();
   };
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -67,7 +65,6 @@ export default function VerticalMenu({
   };
 
   const handleDelete = async (wishlistId: string) => {
-    console.log("Удаляем:", wishlistId);
     try {
       await deleteWishlist(wishlistId);
       await setIsChangeFetch(!isChangeFetch);
@@ -75,7 +72,6 @@ export default function VerticalMenu({
       console.error("Ошибка при удалении:", e);
       toast({ title: "Ошибка", description: "Попробуйте еще раз" });
     } finally {
-      console.log("handledelete завершен");
     }
   };
 

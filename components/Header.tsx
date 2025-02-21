@@ -30,7 +30,7 @@ export default function Header() {
       if (error.message === "Unauthorized") {
         openAuthModal();
       }
-      console.error("Ошибка загрузки профиля:", error);
+      console.error(`Ошибка загрузки профиля: ${error.message}`);
     }
   };
 

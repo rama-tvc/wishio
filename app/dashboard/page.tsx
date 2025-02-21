@@ -44,8 +44,6 @@ export default function Dashboard() {
       try {
         const response = await getWishlists();
 
-        console.log(response);
-
         if (Array.isArray(response)) {
           const formattedWishlists = response.map((wishlist) => ({
             id: wishlist.id,
@@ -93,7 +91,6 @@ export default function Dashboard() {
 
   const handleMenuAction = (actionId: number, wishlistId: string) => {
     alert(`действие ${actionId} выполнено для ${wishlistId}`);
-    console.log("Действие для", wishlistId);
   };
   const { isOpen } = useFilter();
 
@@ -222,7 +219,12 @@ export default function Dashboard() {
                             onMouseLeave={() => setIsHovered("")}
                           >
                             {isHovered === wishlist.id && (
-                              <div className="absolute left-1/2 -translate-x-1/2 mt-6 min-w-48 max-w-full  text-black text-sm rounded-lg shadow-md p-2 transition-opacity duration-300 z-10 truncate">
+                              <div
+                                role="tooltip"
+                                aria-label={wishlist.description}
+                                className="absolute left-1/2 -translate-x-1/2 mt-6 min-w-48 max-w-full text-black text-sm rounded-lg shadow-md p-2 transition-opacity duration-300 z-10 truncate"
+                                style={{ pointerEvents: "none" }}
+                              >
                                 {wishlist.description}
                               </div>
                             )}
@@ -261,7 +263,7 @@ export default function Dashboard() {
                         </TableCell>
                       </TableRow>
                     ))}
-                    {/* Пустая строка для растяжения списка */}
+
                     <TableRow>
                       <TableCell colSpan={7} className="block py-20" />
                     </TableRow>

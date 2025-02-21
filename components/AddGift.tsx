@@ -37,7 +37,7 @@ export default function AddWishlistItem() {
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const newPrice = value === "" ? 0 : parseInt(value, 10);
+    const newPrice = value === "" ? 0 : parseFloat(value);
     setPrice(newPrice);
   };
 
@@ -85,7 +85,7 @@ export default function AddWishlistItem() {
     setLoading(true);
 
     try {
-      const response = await addWishToWishlist(wishlistId, {
+      await addWishToWishlist(wishlistId, {
         title: title,
         description: description,
         price: price,
@@ -98,11 +98,7 @@ export default function AddWishlistItem() {
         title: "Список создан",
         description: "Ваш подарок успешно добавлен",
       });
-      console.log("link", link);
-      console.log("typeoflink", typeof link);
-      console.log("addwishlist", response);
       await setIsChangeFetch(!isChangeFetch);
-      console.log(isChangeFetch);
       setDialogOpen(false);
     } catch (e) {
       console.error("Ошибка при создании списка:", e);

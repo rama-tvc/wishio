@@ -86,7 +86,6 @@ export default function WishlistPage() {
             id: dataOfWishlist.id,
             gifts: formattedGifts,
           });
-          console.log("data", dataOfWishlist);
         }
       } catch (error) {
         console.error("Ошибка при загрузке:", error);
@@ -103,10 +102,6 @@ export default function WishlistPage() {
       fetchWishlist();
     }
   }, [isChangeFetch, wishlistId]);
-
-  useEffect(() => {
-    console.log("wishlist", wishlist);
-  }, [wishlist]);
 
   if (loading) {
     return <p className="text-center text-gray-500">Загрузка...</p>;
