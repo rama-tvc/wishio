@@ -46,7 +46,7 @@ export default function EditWishlist({
       description,
     });
     try {
-      const response = await updateWishlist(wishlistId, {
+      await updateWishlist(wishlistId, {
         title: title,
         description: description,
         deadline: new Date(deadline),

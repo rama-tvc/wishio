@@ -65,8 +65,6 @@ export async function getWishlistById(id: string) {
     throw new Error("Unauthorized");
   }
 
-
-
   const wishList = await prisma.wishList.findFirst({
     where: {
       id,

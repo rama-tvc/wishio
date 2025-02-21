@@ -43,7 +43,7 @@ export default function CreateWishlist() {
     setLoading(true);
 
     try {
-      const response = await createWishlist({
+      await createWishlist({
         title: title,
         description: description,
         deadline: new Date(deadline),

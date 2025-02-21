@@ -8,8 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { MobileMenu } from "./MobileMenu";
 import { useEffect, useState } from "react";
 import { getProfile } from "@/actions/profile/get";
+import { useAuthModal } from "@/hooks/useAuthModal";
 
 export default function Header() {
+  const { openAuthModal } = useAuthModal();
   const { data: session, update: updateSession } = useSession();
   const router = useRouter();
   const [profile, setProfile] = useState({
@@ -24,7 +26,10 @@ export default function Header() {
         name: response.name || "",
         image: response.image || "/placeholder.png",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message === "Unauthorized") {
+        openAuthModal();
+      }
       console.error("Ошибка загрузки профиля:", error);
     }
   };

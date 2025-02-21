@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFilter } from "@/hooks/useFilter";
-import { useSession } from "next-auth/react";
 import { WishlistItem } from "@/app/dashboard/page";
 import { useChange } from "@/hooks/useIsChange";
 

@@ -16,37 +16,31 @@ import SharedLink from "@/components/Sharing";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useChange } from "@/hooks/useIsChange";
-import { getWishlistById, getWishlists } from "@/actions/wishlists/actions";
-import { unreserveWish } from "@/actions/gifts/actions";
+import { getWishlistById } from "@/actions/wishlists/actions";
+import { reserveWish, unreserveWish } from "@/actions/gifts/actions";
 
-interface Wishiochka {
+interface Gift {
   id: string;
-  link?: string | null;
-  description?: string;
-  image?: string | null;
-  price?: number | null;
-  status?: string | null;
-  title?: string | null;
-}
-interface Wishes {
-  gift: Wishiochka;
-}
-interface IWishlistItem {
-  id: string;
-  shareToken?: string | null;
-  description?: string;
-  title?: string | null;
-  gifts: Wishes[];
-}
-
-interface IWishList {
-  shareToken: string;
+  title: string;
   description: string;
-  gifts: IWishlistItem[];
+  price: number;
+  image: string;
+  link: string;
+  status: "RESERVED" | "UNRESERVED";
+}
+
+interface WishlistItem {
+  id: string;
+  gift: Gift;
+}
+
+interface Wishlist {
+  id: string;
+  gifts: WishlistItem[];
 }
 
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState<IWishList | null>(null);
+  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [unReservedMap, setUnReservedMap] = useState<{
@@ -63,32 +57,37 @@ export default function WishlistPage() {
 
   useEffect(() => {
     const fetchWishlist = async () => {
+      const dataOfWishlist = await getWishlistById(wishlistId);
       try {
-        const data = await getWishlistById(wishlistId);
-        if (data) {
-          setTitle(data.title || "");
-          setDescription(data.description || "");
-          setToken(data.shareToken || "");
-
-          const formattedGifts: IWishlistItem[] = data.gifts.map(
-            (item, index) => ({
-              id: item.gift.id || `temp-${index}`, // Если id отсутствует, создаём временный
-              description: item.gift.description || "",
-              title: item.gift.title || "",
-              gifts: [{ gift: item.gift }], // Превращаем `gift` в `gifts[]`
+        if (dataOfWishlist) {
+          setTitle(dataOfWishlist.title || "");
+          setDescription(dataOfWishlist.description || "");
+          setToken(dataOfWishlist.shareToken || "");
+          const formattedGifts: WishlistItem[] = dataOfWishlist.gifts.map(
+            (item) => ({
+              id: item.id,
+              gift: {
+                id: item.gift.id || `temp-${item.id}`,
+                title: item.gift.title || "Без названия",
+                description: item.gift.description || "Без описания",
+                price: item.gift.price || 0,
+                image: item.gift.image || "",
+                link: item.gift.link?.trim()
+                  ? item.gift.link?.startsWith("https://")
+                    ? item.gift.link.slice(8)
+                    : item.gift.link.trim()
+                  : "",
+                status: item.gift.status,
+              },
             })
           );
 
           setWishlist({
-            shareToken: data.shareToken || "",
-            description: data.description || "",
+            id: dataOfWishlist.id,
             gifts: formattedGifts,
           });
+          console.log("data", dataOfWishlist);
         }
-
-        console.log("data", data);
-        console.log("gifts", data.gifts);
-        console.log("wishlist", wishlist);
       } catch (error) {
         console.error("Ошибка при загрузке:", error);
         toast({
@@ -99,9 +98,15 @@ export default function WishlistPage() {
         setLoading(false);
       }
     };
-
     fetchWishlist();
-  }, [isChangeFetch]);
+    if (isChangeFetch) {
+      fetchWishlist();
+    }
+  }, [isChangeFetch, wishlistId]);
+
+  useEffect(() => {
+    console.log("wishlist", wishlist);
+  }, [wishlist]);
 
   if (loading) {
     return <p className="text-center text-gray-500">Загрузка...</p>;
@@ -120,19 +125,22 @@ export default function WishlistPage() {
     );
   }
 
-  const wishes = wishlist.gifts.slice().reverse();
+  const wishes = wishlist.gifts
+    .map((item) => item.gift)
+    .slice()
+    .reverse();
 
   const filteredWishes = wishes
-    ? wishes.filter((gift: Wishiochka) => {
+    ? wishes.filter((gift: Gift) => {
         if (activeTab === "all") return true;
         if (activeTab === "UNRESERVED") return gift.status === "UNRESERVED";
         if (activeTab === "RESERVED") return gift.status === "RESERVED";
       })
     : [];
 
-  const reserveWish = async (wishId: string) => {
+  const reserveWishSend = async (wishId: string) => {
     try {
-      const response = await reserveWish(wishId);
+      await reserveWish(wishId);
 
       toast({
         title: "Зарезервировано",
@@ -147,9 +155,13 @@ export default function WishlistPage() {
       throw e;
     }
   };
-  const unReserveWish = async (wishId: string) => {
+  const unReserveWishSend = async (wishId: string) => {
     try {
       const response = await unreserveWish(wishId);
+
+      if (!response) {
+        console.error("Ошибка при резерве", response);
+      }
 
       toast({
         title: "Резерв отменен",
@@ -218,7 +230,7 @@ export default function WishlistPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredWishes.length > 0 ? (
-            filteredWishes.map((gift: Wishiochka) => (
+            filteredWishes.map((gift: Gift) => (
               <Card key={gift.id} className="overflow-hidden">
                 <div className="relative h-48 bg-gray-100">
                   <Image
@@ -236,9 +248,13 @@ export default function WishlistPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">{gift.description}</p>
-                  <p className="text-lg font-semibold mt-2">{gift.price} тг</p>
+                  <p className="text-lg font-semibold mt-2">
+                    {gift.price || 0} тг
+                  </p>
                   <span className="text-lg font-semibold mt-2 hover:underline">
-                    <Link href={`https://${gift.link}`}> {gift.link} </Link>
+                    <Link href={`https://${gift.link}`} target="_blank">
+                      <p className="truncate text-blue-600"> {gift.link} </p>
+                    </Link>
                   </span>
                 </CardContent>
                 <CardFooter className="flex justify-between">
@@ -248,7 +264,7 @@ export default function WishlistPage() {
                       variant="outline"
                       onClick={async () => {
                         try {
-                          await unReserveWish(gift.id);
+                          await unReserveWishSend(gift.id);
                           toggleReserveStatus(gift.id, "RESERVED");
                         } catch (e) {
                           console.error("error", e);
@@ -263,7 +279,7 @@ export default function WishlistPage() {
                       className="bg-green-500 hover:bg-green-600 text-white"
                       onClick={async () => {
                         try {
-                          await reserveWish(gift.id);
+                          await reserveWishSend(gift.id);
                           toggleReserveStatus(gift.id, "UNRESERVED");
                         } catch (e) {
                           console.error("error", e);

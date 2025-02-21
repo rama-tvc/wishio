@@ -42,6 +42,7 @@ export default function Register() {
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again later.");
+      console.error("error", err);
     } finally {
       setIsLoading(false);
     }

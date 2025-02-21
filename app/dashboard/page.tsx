@@ -58,7 +58,6 @@ export default function Dashboard() {
           }));
 
           setWishlists(formattedWishlists);
-          console.log("wishlists", wishlists);
         } else {
           throw new Error("Invalid data format");
         }
@@ -74,7 +73,7 @@ export default function Dashboard() {
     if (session?.user?.email) {
       fetchWishlists();
     }
-  }, [session?.user?.email, isChangeFetch]);
+  }, [isChangeFetch, session?.user?.email]);
 
   const [activeTab, setActiveTab] = useState<string>("all");
 

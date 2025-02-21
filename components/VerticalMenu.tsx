@@ -34,7 +34,7 @@ export default function VerticalMenu({
   const handleSendToArchive = async (wishlistId: string) => {
     console.log("Send to archive:", wishlistId);
     try {
-      const response = await archiveWishlist(wishlistId);
+      await archiveWishlist(wishlistId);
 
       toast({
         title: "Отправлено в архив",
@@ -69,7 +69,7 @@ export default function VerticalMenu({
   const handleDelete = async (wishlistId: string) => {
     console.log("Удаляем:", wishlistId);
     try {
-      const response = await deleteWishlist(wishlistId);
+      await deleteWishlist(wishlistId);
       await setIsChangeFetch(!isChangeFetch);
     } catch (e) {
       console.error("Ошибка при удалении:", e);

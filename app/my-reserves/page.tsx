@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,43 +9,46 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { toast } from "@/hooks/use-toast";
-import { useChange } from "@/hooks/useIsChange";
-import { getReservedWishes } from "@/actions/gifts/actions";
+import {
+  getReservedWishes,
+  reserveWish,
+  unreserveWish,
+} from "@/actions/gifts/actions";
+import { useSession } from "next-auth/react";
 
 interface User {
   id: string;
   email: string;
-  name?: string;
+  name: string;
 }
 
 interface WishList {
-  id: string;
-  name: string;
   user: User;
 }
 
-interface WishListRelation {
+interface WishLists {
   wishList: WishList;
 }
 
-interface Gift {
+interface GiftReserves {
   id: string;
-  name: string;
-  reservedBy: string;
-  wishLists: WishListRelation[];
+  description: string;
+  image: string;
+  link: string;
+  price: number;
+  status: "RESERVED" | "UNRESERVED";
+  title: string;
+  wishLists: WishLists[];
 }
 
 export default function MyReservePage() {
-  const [wishlist, setWishlist] = useState<Gift | null>(null);
+  const [wishlist, setWishlist] = useState<GiftReserves[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [unReservedMap, setUnReservedMap] = useState<{
     [key: string]: boolean;
   }>({});
-  const { isChangeFetch } = useChange();
-
-  const API_BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchWishlist = async (attempt = 1, maxAttempts = 5) => {
@@ -55,9 +57,6 @@ export default function MyReservePage() {
       try {
         const response = await getReservedWishes();
         console.log("response", response);
-        const correctedData: WishListRelation[] = response.flatMap((item) =>
-          item.wishLists.map((w) => w.wishList)
-        );
 
         if (!Array.isArray(response) || response.length === 0) {
           console.log(
@@ -75,10 +74,25 @@ export default function MyReservePage() {
             });
           }
         } else {
-          setWishlist({
-            wishLists: response,
-          });
-          console.log(wishlist);
+          const correctedData: GiftReserves[] = response.map((item) => ({
+            id: item.id,
+            description: item.description || "",
+            image: item.image || "",
+            link: item.link || "",
+            price: item.price || 0,
+            status: item.status,
+            title: item.title,
+            wishLists: item.wishLists.map((w) => ({
+              wishList: {
+                user: {
+                  id: w.wishList.user.id,
+                  email: w.wishList.user.email,
+                  name: w.wishList.user.name ?? "Неизвестный пользователь",
+                },
+              },
+            })),
+          }));
+          setWishlist(correctedData);
         }
       } catch (error) {
         console.error("Ошибка при загрузке:", error);
@@ -95,10 +109,14 @@ export default function MyReservePage() {
         setLoading(false);
       }
     };
-    if (!wishlist) {
+    if (session) {
       fetchWishlist();
     }
-  }, [isChangeFetch, API_BASE_URL, wishlist]);
+  }, [session]);
+
+  useEffect(() => {
+    console.log("wishlist", wishlist);
+  }, [wishlist]);
 
   if (loading) {
     return <p className="text-center text-gray-500">Загрузка...</p>;
@@ -112,30 +130,14 @@ export default function MyReservePage() {
     );
   }
 
-  const reserveWish = async (wishId: string) => {
+  const reserveWishSend = async (wishId: string) => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/wishes/${wishId}/reserve`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "RESERVED",
-          }),
-        }
-      );
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка резерва");
-      }
+      await reserveWish(wishId);
 
       toast({
         title: "Зарезервировано",
         description: "Ваш подарок успешно зарезервирован",
       });
-      console.log(response);
     } catch (e) {
       toast({
         title: "Резерв владельцем",
@@ -145,41 +147,13 @@ export default function MyReservePage() {
     }
   };
 
-  const unReserveWish = async (wishId: string) => {
+  const unReserveWishSend = async (wishId: string) => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/wishes/${wishId}/reserve`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: "UNRESERVED",
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Ошибка резерва");
-      }
+      await unreserveWish(wishId);
 
       toast({
         title: "Резерв отменен",
         description: "Резерв подарка отменен",
-      });
-
-      setWishlist((prev) => {
-        if (!prev || !prev.wishLists) return prev;
-        return {
-          ...prev,
-          wishes: prev.wishLists.map((wishRelation) =>
-            wishRelation.wishList.id === wishId
-              ? { ...wishRelation.wishList, status: "UNRESERVED" }
-              : wishRelation.wishList
-          ),
-        };
       });
     } catch (e) {
       toast({
@@ -212,7 +186,7 @@ export default function MyReservePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {wishlist?.wishes?.map((wish) => (
+          {wishlist.map((wish) => (
             <Card key={wish.id} className="overflow-hidden">
               <div className="relative h-48 bg-gray-100">
                 <Image
@@ -228,41 +202,38 @@ export default function MyReservePage() {
               </div>
 
               <CardHeader>
-                <CardTitle>{wish.title}</CardTitle>
+                <CardTitle>{wish.title || "Без названия"}</CardTitle>
               </CardHeader>
 
               <CardContent>
-                <p className="text-gray-600">{wish.description}</p>
-                <p className="text-lg font-semibold mt-2">
-                  {wish.price ? `${wish.price} тг` : "Цена не указана"}
+                <p className="text-gray-800">
+                  {wish.description || "Дополнительная информация отсутствует"}
                 </p>
-                {wish.link && (
-                  <span className="text-lg font-semibold mt-2 hover:underline">
-                    <Link
-                      href={
-                        wish.link.startsWith("http")
-                          ? wish.link
-                          : `https://${wish.link}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {wish.link}
-                    </Link>
-                  </span>
-                )}
               </CardContent>
               <CardContent>
-                {" "}
+                <p className="text-gray-800">
+                  {wish.link || "Ссылка отсутствует"}
+                </p>
+              </CardContent>
+              <CardContent>
+                <p className="text-gray-800">{wish.price || 0}тг</p>
+              </CardContent>
+
+              <CardContent>
                 <p className="mt-2 text-sm text-gray-500">
                   Подарок для:{" "}
-                  {(wish?.wishLists?.length ?? 0 > 0)
-                    ? wish?.wishLists
-                        ?.map((wishItem) => wishItem.wishList?.user?.name)
+                  {wish.wishLists.length > 0
+                    ? wish.wishLists
+                        .map(
+                          (wItem) =>
+                            wItem.wishList.user.name ??
+                            wItem.wishList.user.email
+                        )
                         .join(", ")
                     : "Неизвестный пользователь"}
                 </p>
               </CardContent>
+
               <CardFooter className="flex justify-between">
                 {unReservedMap[wish.id] ? (
                   <Button
@@ -270,7 +241,7 @@ export default function MyReservePage() {
                     className="bg-green-500 hover:bg-green-600 text-white"
                     onClick={async () => {
                       try {
-                        await reserveWish(wish.id);
+                        await reserveWishSend(wish.id);
                         toggleReserveStatus(wish.id);
                       } catch (e) {
                         console.error("error", e);
@@ -285,7 +256,7 @@ export default function MyReservePage() {
                     variant="outline"
                     onClick={async () => {
                       try {
-                        await unReserveWish(wish.id);
+                        await unReserveWishSend(wish.id);
                         toggleReserveStatus(wish.id);
                       } catch (e) {
                         console.error("error", e);

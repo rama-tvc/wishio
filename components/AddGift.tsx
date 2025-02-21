@@ -102,6 +102,7 @@ export default function AddWishlistItem() {
       console.log("typeoflink", typeof link);
       console.log("addwishlist", response);
       await setIsChangeFetch(!isChangeFetch);
+      console.log(isChangeFetch);
       setDialogOpen(false);
     } catch (e) {
       console.error("Ошибка при создании списка:", e);
