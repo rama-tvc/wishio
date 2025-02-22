@@ -127,9 +127,16 @@ export default function WishlistPage() {
 
   const filteredWishes = wishes
     ? wishes.filter((gift: Gift) => {
-        if (activeTab === "all") return true;
-        if (activeTab === "UNRESERVED") return gift.status === "UNRESERVED";
-        if (activeTab === "RESERVED") return gift.status === "RESERVED";
+        switch (activeTab) {
+          case "all":
+            return true;
+          case "UNRESERVED":
+            return gift.status === "UNRESERVED";
+          case "RESERVED":
+            return gift.status === "RESERVED";
+          default:
+            return false;
+        }
       })
     : [];
 
