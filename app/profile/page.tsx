@@ -149,7 +149,7 @@ export default function Profile() {
               onClick={handleImageClick}
             >
               <AvatarImage
-                src={previewUrl || "/placeholder.svg"}
+                src={previewUrl || "/placeholder.png"}
                 alt="Profile picture"
               />
               <AvatarFallback>

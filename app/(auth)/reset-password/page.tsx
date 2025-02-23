@@ -45,9 +45,10 @@ export default function ResetPassword() {
         setStatus("error");
         setMessage(response.toString || "Something went wrong");
       }
-    } catch (error) {
+    } catch (e) {
       setStatus("error");
       setMessage("An error occurred. Please try again.");
+      console.error(e);
     }
   };
 

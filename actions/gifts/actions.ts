@@ -41,7 +41,7 @@ const UpdateWishSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   price: z.number().optional(),
-  link: z.string().url().optional(),
+  link: z.string().optional(),
   image: z.string().optional(),
   file: z
     .instanceof(File)
@@ -142,6 +142,9 @@ export async function updateWish(
 }
 
 export async function reserveWish(id: string) {
+  if(!id) {
+    throw new Error('wishId is required')
+  }
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
@@ -151,6 +154,9 @@ export async function reserveWish(id: string) {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
   });
+  if(!user) {
+    throw new Error ('user not found')
+  }
 
   const wish = await prisma.gift.findUnique({
     where: { id },
@@ -178,7 +184,7 @@ export async function reserveWish(id: string) {
     throw new Error("You cannot reserve your own wish");
   }
 
-  if (wish.reservedBy) {
+  if (wish.reservedBy !== null) {
     throw new Error("Wish is already reserved");
   }
 
@@ -230,7 +236,7 @@ const AddWishSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   price: z.number().optional(),
-  link: z.string().url().optional(),
+  link: z.string().optional(),
   image: z.string().optional(),
   file: z
     .instanceof(File)
@@ -315,7 +321,7 @@ export async function addWishToWishlist(
       title: data.title,
       description: data.description ?? "",
       price: data.price,
-      link: data.link,
+      link: data.link ?? "",
       image: imageUrl,
       wishLists: {
         create: {

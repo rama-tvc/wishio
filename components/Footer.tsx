@@ -1,6 +1,15 @@
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+  const [emailSubmit, setEmailSubmit] = useState("");
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailSubmit(e.target.value);
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setEmailSubmit("");
+  };
   return (
     <footer className="bg-gray-900 text-white py-12">
       <div className="container mx-auto px-6">
@@ -12,16 +21,16 @@ export default function Footer() {
           <div className="w-full md:w-1/4 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-4">Ссылки</h3>
             <ul className="space-y-2">
-              <li>
+              <li className="hover:underline">
                 <Link href="/about">О нас</Link>
               </li>
-              <li>
+              <li className="hover:underline">
                 <Link href="/how-it-works">Как это работает</Link>
               </li>
-              <li>
+              <li className="hover:underline">
                 <Link href="/privacy">Конфиденциальность</Link>
               </li>
-              <li>
+              <li className="hover:underline">
                 <Link href="/terms">Условия использования</Link>
               </li>
             </ul>
@@ -29,17 +38,18 @@ export default function Footer() {
           <div className="w-full md:w-1/4 mb-6 md:mb-0">
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <p>Email: support@wishio.com</p>
-            <p>Телефон: +7 (999) 123-45-67</p>
           </div>
           <div className="w-full md:w-1/4">
             <h3 className="text-lg font-semibold mb-4">
               Подписаться на новости
             </h3>
-            <form className="flex">
+            <form className="flex" onSubmit={handleSubmit}>
               <input
                 type="email"
                 placeholder="Ваш email"
-                className="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary"
+                value={emailSubmit}
+                onChange={handleEmailChange}
+                className="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary text-gray-900"
               />
               <button
                 type="submit"
@@ -51,7 +61,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 text-center">
-          <p>&copy; 2023 Wishio. Все права защищены.</p>
+          <p>&copy; 2025 Wishio. Все права защищены.</p>
         </div>
       </div>
     </footer>
